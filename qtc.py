@@ -166,6 +166,28 @@ def mine():
 					outbin(mux_str_to_bin(tokens[2]))
 					outbin(mux_str_to_bin(tokens[3]))
 
+		if insb=='li32':
+			if insproplen!=1:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
+			if len(tokens)!=3:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
+			if tokens[2][0]!='#':
+				sys.exit(sys.argv[0]+': error: %d: argument #3 of li32 must be imm'%(c))
+
+			outbin('1110 000')
+			outbin('0')
+			outbin('0000')
+			outbin('000')
+			outbin('000')
+			outbin('0')
+			outbin('0')
+
+			outbin(addrAw_str_to_bin(tokens[1]))
+			outbin('100111')
+
+			n=int(tokens[2][1:])
+			print("%032d"%(int(bin(n)[2:])))
+
 		else:
 			sys.exit(sys.argv[0]+': error: %d: invalid instruction name: '%(c)+insb)
 

@@ -4,11 +4,14 @@ import sys
 
 #Let's cooking!
 def mine():
+	c=0
 	while True:
 		try:
 			s=input()
 		except EOFError:
 			break
+
+		c+=1
 
 		tokens=[i.strip() for i in s.split(',')]
 
@@ -27,10 +30,10 @@ def mine():
 				else:
 					cond='never'
 			else:
-				sys.exit(sys.argv[0]+': error: invalid the number of the instruction properties: %d'%(insproplen))
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d'%(c, insproplen))
 
 			if len(tokens)!=4:
-				sys.exit(sys.argv[0]+': error: invalid the number of the instruction tokens: %d'%(len(tokens)))
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
 
 			if tokens[2][0]=='#' or tokens[3][0]=='#':
 				#uses immediate
@@ -104,7 +107,7 @@ def mine():
 				opbin='010'
 				opflag=False
 			else:
-				sys.exit(sys.argv[0]+': error: invalid alu op name: '+op)
+				sys.exit(sys.argv[0]+': error: %d: invalid alu op name: '%(c)+op)
 
 			if opflag:
 				outbin(addrAw_str_to_bin(tokens[1]))
@@ -120,7 +123,7 @@ def mine():
 			#WARNING: negative int and float immediate is not supported yet
 			if tokens[2][0]=='#' and tokens[3][0]=='#':
 				if int(tokens[2][1:])!=token[3][1:]:
-					sys.exit(sys.argv[0]+': error: different immediates are specified to alu')
+					sys.exit(sys.argv[0]+': error: %d: different immediates are specified to alu'%(c))
 			if tokens[2][0]=='#':
 				outbin(imm_str_to_bin(tokens[2][1:]))
 				outbin('100111')
@@ -164,7 +167,7 @@ def mine():
 					outbin(mux_str_to_bin(tokens[3]))
 
 		else:
-			sys.exit(sys.argv[0]+': error: invalid instruction name: '+insb)
+			sys.exit(sys.argv[0]+': error: %d: invalid instruction name: '%(c)+insb)
 
 		outbin(0, endflag=True)
 
@@ -184,7 +187,7 @@ def addrAw_str_to_bin(id):
 	elif id=='r3':
 		return '100011'
 	else:
-		sys.exit(sys.argv[0]+': addrAw_str_to_bin: error: unknown id: '+id)
+		sys.exit(sys.argv[0]+': addrAw_str_to_bin: error: %d: unknown id: '%(c)+id)
 
 def addrBw_str_to_bin(id):
 	if id=='r0':
@@ -196,12 +199,12 @@ def addrBw_str_to_bin(id):
 	elif id=='r3':
 		return '100011'
 	else:
-		sys.exit(sys.argv[0]+': addrBw_str_to_bin: error: unknown id: '+id)
+		sys.exit(sys.argv[0]+': addrBw_str_to_bin: error: %d: unknown id: '%(c)+id)
 
 def imm_str_to_bin(id):
 	n=int(id)
 	if not(n>=0 and n<=17):
-		sys.exit(sys.argv[0]+': imm_str_to_bin: error: invalid the range of the number: '+id)
+		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
 	return "%06d"%(int(bin(n)[2:]))
 
 def mux_str_to_bin(id):
@@ -218,7 +221,7 @@ def mux_str_to_bin(id):
 	elif id=='r5':
 		return '101'
 	else:
-		sys.exit(sys.argv[0]+': mux_str_to_bin: error: unknown id: '+id)
+		sys.exit(sys.argv[0]+': mux_str_to_bin: error: %d: unknown id: '%(c)+id)
 
 if __name__=='__main__':
 	mine()

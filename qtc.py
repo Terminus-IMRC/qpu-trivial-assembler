@@ -205,7 +205,7 @@ def mine():
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
 
 			outbin('1111')
-			#I do not know what to fill here
+			#I do not know with what to fill here
 			outbin('0000')
 
 			if cond=='allzs':

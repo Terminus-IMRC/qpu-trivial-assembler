@@ -5,6 +5,7 @@ import sys
 #Let's cooking!
 def mine():
 	c=0
+	labels={}
 	while True:
 		try:
 			s=input()
@@ -187,6 +188,71 @@ def mine():
 
 			n=int(tokens[2][1:])
 			print("%032d"%(int(bin(n)[2:])))
+
+		elif insb=='lbl':
+			if insproplen!=1:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
+			if len(tokens)!=2:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
+
+			labels[tokens[1]]=c
+
+		elif insb=='brr':
+			if insproplen!=2:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
+			cond=insprop[1]
+			if len(tokens)!=2:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
+
+			outbin('1111')
+			#I do not know what to fill here
+			outbin('0000')
+
+			if cond=='allzs':
+				condbin='0000'
+			elif cond=='allzc':
+				condbin='0001'
+			elif cond=='anyzs':
+				condbin='0010'
+			elif cond=='anyzc':
+				condbin='0011'
+			elif cond=='allns':
+				condbin='0100'
+			elif cond=='allnc':
+				condbin='0101'
+			elif cond=='anyns':
+				condbin='0110'
+			elif cond=='anync':
+				condbin='0111'
+			elif cond=='allcs':
+				condbin='1000'
+			elif cond=='allcc':
+				condbin='1001'
+			elif cond=='anycs':
+				condbin='1010'
+			elif cond=='anycc':
+				condbin='1011'
+			elif cond=='always':
+				condbin='1111'
+			else:
+				sys.exit(sys.argv[0]+': error: %d: unknown branch condition: %s'%(c, cond))
+			outbin(condbin)
+			outbin('1')
+			outbin('0')
+			#What is this address? Where to find the information...
+			outbin('00000')
+			outbin('0')
+			outbin('100111')
+			outbin('100111')
+
+			n=8*(4+(labels[tokens[1]]-c))
+			if n<0:
+				ns="%032d"%(int(bin(n)[3:]))
+				ns[0]=1
+			else:
+				ns="%032d"%(int(bin(n)[2:]))
+
+			outbin(ns)
 
 		else:
 			sys.exit(sys.argv[0]+': error: %d: invalid instruction name: '%(c)+insb)

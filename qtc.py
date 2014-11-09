@@ -264,8 +264,8 @@ def outbin(b, endflag=False, finishflag=False):
 		for i in labels.items():
 			for j in range(len(out_lines)):
 				out_lines[j]=re.sub(' '+re.escape(i[0])+' ', ' '+re.escape(int_to_32binstr(8*(-4+(i[1]-(j+1)))))+' ', out_lines[j])
-		for i in out_lines:
-			print(i)
+		for i in range(len(out_lines)-1):
+			print(out_lines[i])
 	elif endflag:
 		out_lines.append('')
 	else:

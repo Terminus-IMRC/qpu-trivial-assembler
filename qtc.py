@@ -19,8 +19,6 @@ def mine():
 
 		tokens=[i.strip() for i in s.split(',')]
 
-		print(tokens)
-
 		insprop=tokens[0].split('.')
 		insproplen=len(insprop)
 
@@ -263,8 +261,6 @@ def outbin(b, endflag=False, finishflag=False):
 	global out_lines, labels
 
 	if finishflag:
-		print(out_lines)
-		print(labels)
 		for i in labels.items():
 			for j in range(len(out_lines)):
 				out_lines[j]=re.sub(' '+re.escape(i[0])+' ', ' '+re.escape(int_to_32binstr(8*(-4+(i[1]-(j+1)))))+' ', out_lines[j])
@@ -344,7 +340,6 @@ def complement_num_32(n):
 				s=s[:i]+'1'+s[i+1:]
 			else:
 				s=s[:i]+'0'+s[i+1:]
-		print('s', s)
 		return int(s, 2)
 	else:
 		return n

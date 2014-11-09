@@ -190,7 +190,7 @@ def mine():
 			outbin('100111')
 
 			n=int(tokens[2][1:])
-			print("%032d"%(int(bin(n)[2:])))
+			outbin("%032d"%(int(bin(n)[2:])))
 
 		elif insb=='lbl':
 			if insproplen!=1:

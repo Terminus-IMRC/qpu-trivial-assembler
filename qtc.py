@@ -136,18 +136,18 @@ def mine():
 				if int(tokens[2][1:])!=int(tokens[3][1:]):
 					sys.exit(sys.argv[0]+': error: %d: different immediates are specified to alu'%(c))
 			if tokens[2][0]=='#':
-				outbin(imm_str_to_bin(tokens[2][1:]))
 				outbin('100111')
+				outbin(imm_str_to_bin(tokens[2][1:]))
 
 				if opflag:
-					outbin('110')
+					outbin('111')
 					outbin(mux_str_to_bin(tokens[3]))
 					outbin('000')
 					outbin('000')
 				else:
 					outbin('000')
 					outbin('000')
-					outbin('110')
+					outbin('111')
 					outbin(mux_str_to_bin(tokens[3]))
 			elif tokens[3][0]=='#':
 				outbin('100111')

@@ -188,6 +188,7 @@ def mine():
 			outbin('100111')
 
 			n=int(tokens[2][1:])
+			n=complement_num_32(n)
 			outbin("%032d"%(int(bin(n)[2:])))
 
 		elif insb=='lbl':

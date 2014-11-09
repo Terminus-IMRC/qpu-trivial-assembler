@@ -290,6 +290,8 @@ def addrAw_str_to_bin(id):
 		return '100010'
 	elif id=='r3':
 		return '100011'
+	elif id=='nop':
+		return '100111'
 	else:
 		sys.exit(sys.argv[0]+': addrAw_str_to_bin: error: %d: unknown id: '%(c)+id)
 
@@ -302,6 +304,8 @@ def addrBw_str_to_bin(id):
 		return '100010'
 	elif id=='r3':
 		return '100011'
+	elif id=='nop':
+		return '100111'
 	else:
 		sys.exit(sys.argv[0]+': addrBw_str_to_bin: error: %d: unknown id: '%(c)+id)
 

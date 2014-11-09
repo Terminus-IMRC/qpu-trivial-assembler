@@ -24,7 +24,9 @@ def mine():
 
 		insb=insprop[0]
 
-		if insb=='alu':
+		if insb[0]=='!':
+			outbin(insprop[0][1:])
+		elif insb=='alu':
 			if insproplen==2 or insproplen==3:
 				op=insprop[1]
 				if insproplen==3:

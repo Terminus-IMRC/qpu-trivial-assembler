@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 
 import sys
+import re
+
+out_lines=['']
+labels={}
+c=1
 
 #Let's cooking!
 def mine():
-	c=0
-	labels={}
+	global labels, c
+
 	while True:
 		try:
 			s=input()
 		except EOFError:
 			break
-
-		c+=1
 
 		tokens=[i.strip() for i in s.split(',')]
 
@@ -197,6 +200,8 @@ def mine():
 
 			labels[tokens[1]]=c
 
+			continue
+
 		elif insb=='brr':
 			if insproplen!=2:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
@@ -245,25 +250,30 @@ def mine():
 			outbin('100111')
 			outbin('100111')
 
-			n=8*(4+(labels[tokens[1]]-c))
-			if n<0:
-				ns="%032d"%(int(bin(n)[3:]))
-				ns[0]=1
-			else:
-				ns="%032d"%(int(bin(n)[2:]))
-
-			outbin(ns)
+			outbin(tokens[1])
 
 		else:
 			sys.exit(sys.argv[0]+': error: %d: invalid instruction name: '%(c)+insb)
 
 		outbin(0, endflag=True)
+		c+=1
+	outbin(0, finishflag=True)
 
-def outbin(b, endflag=False):
-	if endflag:
-		print('')
+def outbin(b, endflag=False, finishflag=False):
+	global out_lines, labels
+
+	if finishflag:
+		print(out_lines)
+		print(labels)
+		for i in labels.items():
+			for j in range(len(out_lines)):
+				out_lines[j]=re.sub(' '+re.escape(i[0])+' ', ' '+re.escape(int_to_32binstr(8*(-4+(i[1]-(j+1)))))+' ', out_lines[j])
+		for i in out_lines:
+			print(i)
+	elif endflag:
+		out_lines.append('')
 	else:
-		print(b, end=' ')
+		out_lines[len(out_lines)-1]+=b+' '
 
 def addrAw_str_to_bin(id):
 	if id=='r0':
@@ -310,6 +320,34 @@ def mux_str_to_bin(id):
 		return '101'
 	else:
 		sys.exit(sys.argv[0]+': mux_str_to_bin: error: %d: unknown id: '%(c)+id)
+
+def int_to_32binstr(n):
+	if n<0:
+		s=bin(complement_num_32(n))[3:]
+	else:
+		s=bin(n)[2:]
+	b="%032d"%(int(s))
+	if n<0:
+		b='1'+b[1:]
+	else:
+		b='0'+b[1:]
+
+	return b
+
+def complement_num_32(n):
+	if n<0:
+		n=-n
+		n-=1
+		s="%032d"%(int(bin(n)[2:]))
+		for i in range(32):
+			if s[i]=='0':
+				s=s[:i]+'1'+s[i+1:]
+			else:
+				s=s[:i]+'0'+s[i+1:]
+		print('s', s)
+		return int(s, 2)
+	else:
+		return n
 
 if __name__=='__main__':
 	mine()

@@ -122,11 +122,11 @@ def mine():
 
 			if opflag:
 				outbin(addrAw_str_to_bin(tokens[1]))
-				outbin('000000')
+				outbin('100111')
 				outbin('000')
 				outbin(opbin)
 			else:
-				outbin('000000')
+				outbin('100111')
 				outbin(addrBw_str_to_bin(tokens[1]))
 				outbin(opbin)
 				outbin('00000')

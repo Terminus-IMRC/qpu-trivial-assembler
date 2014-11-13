@@ -39,7 +39,7 @@ def mine():
 				if insproplen==3:
 					cond=insprop[2]
 				else:
-					cond='never'
+					cond='always'
 			else:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d'%(c, insproplen))
 

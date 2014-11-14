@@ -34,11 +34,23 @@ def mine():
 			outbin(0, endflag=True)
 			continue
 		elif insb=='alu':
-			if insproplen==2 or insproplen==3:
+			if insproplen==2 or insproplen==3 or insproplen==4:
 				op=insprop[1]
 				if insproplen==3:
-					cond=insprop[2]
+					if insprop[2]=='sf':
+						sf=True
+						cond='always'
+					else:
+						sf=False
+						cond=insprop[2]
+				elif insproplen==4:
+					sf=True
+					if insprop[2]=='sf':
+						cond=insprop[3]
+					else:
+						cond=insprop[2]
 				else:
+					sf=False
 					cond='always'
 			else:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d'%(c, insproplen))
@@ -111,13 +123,18 @@ def mine():
 				condbin='110'
 			elif cond=='cc':
 				condbin='111'
+
 			if opflag:
 				outbin(condbin)
 				outbin('000')
 			else:
 				outbin('000')
 				outbin(condbin)
-			outbin('1')
+
+			if sf:
+				outbin('1')
+			else:
+				outbin('0')
 
 			#WARNING: write swap is not supported (yet)
 			outbin('0')
@@ -206,7 +223,10 @@ def mine():
 			outbin('0000')
 			outbin('000')
 			outbin('000')
-			outbin('0')
+			if sf:
+				outbin('1')
+			else:
+				outbin('0')
 			outbin('0')
 
 			outbin(addrAw_str_to_bin(tokens[1]))

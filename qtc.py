@@ -206,7 +206,8 @@ def mine():
 			outbin('1110 000')
 			outbin('0')
 			outbin('0000')
-			outbin('000')
+			condbin=alucond_str_to_bin(cond)
+			outbin(condbin)
 			outbin('000')
 			if sf:
 				outbin('1')

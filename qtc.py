@@ -107,22 +107,7 @@ def mine():
 			else:
 				sys.exit(sys.argv[0]+': error: %d: invalid alu op name: '%(c)+op)
 
-			if cond=='never':
-				condbin='000'
-			elif cond=='always':
-				condbin='001'
-			elif cond=='zs':
-				condbin='010'
-			elif cond=='zc':
-				condbin='011'
-			elif cond=='ns':
-				condbin='100'
-			elif cond=='nc':
-				condbin='101'
-			elif cond=='cs':
-				condbin='110'
-			elif cond=='cc':
-				condbin='111'
+			condbin=alucond_str_to_bin(cond)
 
 			if opflag:
 				outbin(condbin)
@@ -366,6 +351,28 @@ def mux_str_to_bin(id):
 		return '101'
 	else:
 		sys.exit(sys.argv[0]+': mux_str_to_bin: error: %d: unknown id: '%(c)+id)
+
+def alucond_str_to_bin(cond):
+	if cond=='never':
+		condbin='000'
+	elif cond=='always':
+		condbin='001'
+	elif cond=='zs':
+		condbin='010'
+	elif cond=='zc':
+		condbin='011'
+	elif cond=='ns':
+		condbin='100'
+	elif cond=='nc':
+		condbin='101'
+	elif cond=='cs':
+		condbin='110'
+	elif cond=='cc':
+		condbin='111'
+	else:
+		sys.exit(sys.argv[0]+': cond_str_to_bin: error: unknown id: '+cond)
+
+	return condbin
 
 def int_to_32binstr(n):
 	if n<0:

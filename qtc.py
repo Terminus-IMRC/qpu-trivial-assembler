@@ -58,31 +58,6 @@ def mine():
 			outbin('0')
 			outbin('0000')
 
-			if cond=='never':
-				condbin='000'
-			elif cond=='always':
-				condbin='001'
-			elif cond=='zs':
-				condbin='010'
-			elif cond=='zc':
-				condbin='011'
-			elif cond=='ns':
-				condbin='100'
-			elif cond=='nc':
-				condbin='101'
-			elif cond=='cs':
-				condbin='110'
-			elif cond=='cc':
-				condbin='111'
-			#set same cond for add and mul because they are executed exclusively for now
-			outbin(condbin)
-			outbin(condbin)
-			#I cannot understand why this flag exists. 'never' can be used as cond
-			outbin('1')
-
-			#WARNING: write swap is not supported (yet)
-			outbin('0')
-
 			opflag=None #True for add and False for mul
 			if op=='nop':
 				opbin='00000'
@@ -119,6 +94,33 @@ def mine():
 				opflag=False
 			else:
 				sys.exit(sys.argv[0]+': error: %d: invalid alu op name: '%(c)+op)
+
+			if cond=='never':
+				condbin='000'
+			elif cond=='always':
+				condbin='001'
+			elif cond=='zs':
+				condbin='010'
+			elif cond=='zc':
+				condbin='011'
+			elif cond=='ns':
+				condbin='100'
+			elif cond=='nc':
+				condbin='101'
+			elif cond=='cs':
+				condbin='110'
+			elif cond=='cc':
+				condbin='111'
+			if opflag:
+				outbin(condbin)
+				outbin('000')
+			else:
+				outbin('000')
+				outbin(condbin)
+			outbin('1')
+
+			#WARNING: write swap is not supported (yet)
+			outbin('0')
 
 			if opflag:
 				outbin(addrAw_str_to_bin(tokens[1]))

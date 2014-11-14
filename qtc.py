@@ -196,7 +196,7 @@ def mine():
 					outbin(mux_str_to_bin(tokens[3]))
 
 		elif insb=='li32':
-			if insproplen!=1 and insproplen!=2:
+			if insproplen!=1 and insproplen!=2 and insproplen!=3:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
 			if len(tokens)!=3:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))

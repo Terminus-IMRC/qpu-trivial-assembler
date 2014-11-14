@@ -198,6 +198,23 @@ def mine():
 		elif insb=='li32':
 			if insproplen!=1 and insproplen!=2 and insproplen!=3:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
+			else:
+				if insproplen==1:
+					sf=False
+					cond='never'
+				elif insproplen==2:
+					if insprop[1]=='sf':
+						sf=True
+						cond='never'
+					else:
+						sf=False
+						cond=insprop[1]
+				else:
+					sf=True
+					if insprop[1]=='sf':
+						cond=insprop[2]
+					else:
+						cond=insprop[1]
 			if len(tokens)!=3:
 				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
 			if tokens[2][0]!='#':

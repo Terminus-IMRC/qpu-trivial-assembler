@@ -234,46 +234,181 @@ def mine():
 					outbin('111')
 					outbin('111')
 			elif tokens[2][0]=='#':
-				outbin('100111')
+				if tokens[3]=='r0' or tokens[3]=='r1' or tokens[3]=='r2' or tokens[3]=='r3' or tokens[3]=='r4' or tokens[3]=='r5':
+					use_mux=True
+				else:
+					use_mux=False
+					r_location=locate_r_register(tokens[3])
+					if r_location!=0 and r_location!=1:
+						sys.exit(sys.argv[0]+': error: %d: r_location may be invalid: %d'%(c, r_location))
+
+				if use_mux:
+					outbin('100111')
+				else:
+					if r_location==0:
+						outbin(addrAr_str_to_bin(tokens[3]))
+					else:
+						outbin(addrBr_str_to_bin(tokens[3]))
 				outbin(imm_str_to_bin(tokens[2][1:]))
 
 				if opflag:
-					outbin('111')
-					outbin(mux_str_to_bin(tokens[3]))
+					if use_mux:
+						outbin(mux_str_to_bin(tokens[3]))
+						outbin('111')
+					else:
+						if r_location==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 					outbin('000')
 					outbin('000')
 				else:
 					outbin('000')
 					outbin('000')
-					outbin('111')
-					outbin(mux_str_to_bin(tokens[3]))
+					if use_mux:
+						outbin(mux_str_to_bin(tokens[3]))
+						outbin('111')
+					else:
+						if r_location==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 			elif tokens[3][0]=='#':
-				outbin('100111')
+				if tokens[2]=='r0' or tokens[2]=='r1' or tokens[2]=='r2' or tokens[2]=='r3' or tokens[2]=='r4' or tokens[2]=='r5':
+					use_mux=True
+				else:
+					use_mux=False
+					r_location=locate_r_register(tokens[2])
+					if r_location!=0 and r_location!=1:
+						sys.exit(sys.argv[0]+': error: %d: r_location may be invalid: %d'%(c, r_location))
+
+				if use_mux:
+					outbin('100111')
+				else:
+					if r_location==0:
+						outbin(addrAr_str_to_bin(tokens[2]))
+					else:
+						outbin(addrBr_str_to_bin(tokens[2]))
 				outbin(imm_str_to_bin(tokens[3][1:]))
 
 				if opflag:
-					outbin(mux_str_to_bin(tokens[2]))
-					outbin('111')
+					if use_mux:
+						outbin(mux_str_to_bin(tokens[2]))
+						outbin('111')
+					else:
+						if r_location==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 					outbin('000')
 					outbin('000')
 				else:
 					outbin('000')
 					outbin('000')
-					outbin(mux_str_to_bin(tokens[2]))
-					outbin('111')
+					if use_mux:
+						outbin(mux_str_to_bin(tokens[2]))
+						outbin('111')
+					else:
+						if r_location==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 			else:
-				outbin('100111')
-				outbin('100111')
+				if tokens[2]=='r0' or tokens[2]=='r1' or tokens[2]=='r2' or tokens[2]=='r3' or tokens[2]=='r4' or tokens[2]=='r5':
+					use_mux_2=True
+				else:
+					use_mux_2=False
+					r_location_2=locate_r_register(tokens[2])
+					if r_location_2!=0 and r_location_2!=1:
+						sys.exit(sys.argv[0]+': error: %d: r_location_2 may be invalid: %d'%(c, r_location_2))
+				if tokens[3]=='r0' or tokens[3]=='r1' or tokens[3]=='r2' or tokens[3]=='r3' or tokens[3]=='r4' or tokens[3]=='r5':
+					use_mux_3=True
+				else:
+					use_mux_3=False
+					r_location_3=locate_r_register(tokens[3])
+					if r_location_3!=0 and r_location_3!=1:
+						sys.exit(sys.argv[0]+': error: %d: r_location_3 may be invalid: %d'%(c, r_location_3))
+
+				if (not use_mux_2) and (not use_mux_3) and (r_location_2==r_location_3):
+					sys.exit(sys.argv[0]+': error: %d: attempting to read from the same register file space(A or B)'%(c))
+
+				if use_mux_2:
+					outbin('100111')
+				else:
+					if r_location_2==0:
+						outbin(addrAr_str_to_bin(tokens[2]))
+					else:
+						outbin(addrBr_str_to_bin(tokens[2]))
+				if use_mux_3:
+					outbin('100111')
+				else:
+					if r_location_3==0:
+						outbin(addrAr_str_to_bin(tokens[3]))
+					else:
+						outbin(addrBr_str_to_bin(tokens[3]))
+
 				if opflag:
-					outbin(mux_str_to_bin(tokens[2]))
-					outbin(mux_str_to_bin(tokens[3]))
+					if use_mux_2 and use_mux_3:
+						outbin(mux_str_to_bin(tokens[2]))
+						outbin(mux_str_to_bin(tokens[3]))
+					elif use_mux_2 and (not use_mux_3):
+						if r_location_3==0:
+							outbin('110')
+							outbin(mux_str_to_bin(tokens[2]))
+						else:
+							outbin(mux_str_to_bin(tokens[2]))
+							outbin('110')
+					elif (not use_mux_2) and use_mux_3:
+						if r_location_2==0:
+							outbin('110')
+							outbin(mux_str_to_bin(tokens[3]))
+						else:
+							outbin(mux_str_to_bin(tokens[3]))
+							outbin('110')
+					else:
+						if r_location_2==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 					outbin('000')
 					outbin('000')
 				else:
 					outbin('000')
 					outbin('000')
-					outbin(mux_str_to_bin(tokens[2]))
-					outbin(mux_str_to_bin(tokens[3]))
+					if use_mux_2 and use_mux_3:
+						outbin(mux_str_to_bin(tokens[2]))
+						outbin(mux_str_to_bin(tokens[3]))
+					elif use_mux_2 and (not use_mux_3):
+						if r_location_3==0:
+							outbin('110')
+							outbin(mux_str_to_bin(tokens[2]))
+						else:
+							outbin(mux_str_to_bin(tokens[2]))
+							outbin('110')
+					elif (not use_mux_2) and use_mux_3:
+						if r_location_2==0:
+							outbin('110')
+							outbin(mux_str_to_bin(tokens[3]))
+						else:
+							outbin(mux_str_to_bin(tokens[3]))
+							outbin('110')
+					else:
+						if r_location_2==0:
+							outbin('110')
+							outbin('111')
+						else:
+							outbin('111')
+							outbin('110')
 
 		elif insb=='li32':
 			if insproplen!=1 and insproplen!=2 and insproplen!=3:
@@ -426,6 +561,22 @@ def addrBw_str_to_bin(id):
 		addr=addrBw[id]
 	except KeyError:
 		sys.exit(sys.argv[0]+': addrBw_str_to_bin: error: %d: unknown id: '%(c)+id)
+	
+	return addr
+
+def addrAr_str_to_bin(id):
+	try:
+		addr=addrAr[id]
+	except KeyError:
+		sys.exit(sys.argv[0]+': addrAr_str_to_bin: error: %d: unknown id: '%(c)+id)
+	
+	return addr
+
+def addrBr_str_to_bin(id):
+	try:
+		addr=addrBr[id]
+	except KeyError:
+		sys.exit(sys.argv[0]+': addrBr_str_to_bin: error: %d: unknown id: '%(c)+id)
 	
 	return addr
 

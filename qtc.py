@@ -7,6 +7,22 @@ out_lines=['']
 labels={}
 c=1
 
+addrAw={
+	'r0':'100000',
+	'r1':'100001',
+	'r2':'100010',
+	'r3':'100011',
+	'nop':'100111'
+}
+
+addrBw={
+	'r0':'100000',
+	'r1':'100001',
+	'r2':'100010',
+	'r3':'100011',
+	'nop':'100111'
+}
+
 #Let's cooking!
 def mine():
 	global labels, c
@@ -321,32 +337,20 @@ def outbin(b, endflag=False, finishflag=False):
 		out_lines[len(out_lines)-1]+=b+' '
 
 def addrAw_str_to_bin(id):
-	if id=='r0':
-		return '100000'
-	elif id=='r1':
-		return '100001'
-	elif id=='r2':
-		return '100010'
-	elif id=='r3':
-		return '100011'
-	elif id=='nop':
-		return '100111'
-	else:
+	try:
+		addr=addrAw[id]
+	except KeyError:
 		sys.exit(sys.argv[0]+': addrAw_str_to_bin: error: %d: unknown id: '%(c)+id)
 
+	return addr
+
 def addrBw_str_to_bin(id):
-	if id=='r0':
-		return '100000'
-	elif id=='r1':
-		return '100001'
-	elif id=='r2':
-		return '100010'
-	elif id=='r3':
-		return '100011'
-	elif id=='nop':
-		return '100111'
-	else:
+	try:
+		addr=addrBw[id]
+	except KeyError:
 		sys.exit(sys.argv[0]+': addrBw_str_to_bin: error: %d: unknown id: '%(c)+id)
+	
+	return addr
 
 def imm_str_to_bin(id):
 	n=int(id)

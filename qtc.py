@@ -416,7 +416,7 @@ def mine():
 			else:
 				if insproplen==1:
 					sf=False
-					cond='never'
+					cond='always'
 				elif insproplen==2:
 					if insprop[1]=='sf':
 						sf=True

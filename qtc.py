@@ -263,7 +263,7 @@ def mine():
 				elif insproplen==2:
 					if insprop[1]=='sf':
 						sf=True
-						cond='never'
+						cond='always'
 					else:
 						sf=False
 						cond=insprop[1]

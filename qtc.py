@@ -513,5 +513,18 @@ def locate_w_register(id):
 	else:
 		return 0 #indicates Aw
 
+def locate_r_register(id):
+	try:
+		addrAr[id]
+	except KeyError:
+		try:
+			addrBr[id]
+		except KeyError:
+			sys.exit(sys.argv[0]+': locate_r_register: error: unknown id: '+id)
+		else:
+			return 1 #indicates Br
+	else:
+		return 0 #indicates Ar
+
 if __name__=='__main__':
 	mine()

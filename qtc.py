@@ -45,6 +45,28 @@ addrBw={
 	'VPM_ST_ADDR':'110010'
 }
 
+addrAr={
+	'nop':'100111',
+
+	'UNIFORM_READ':'100000',
+	'ELEMENT_NUMBER':'100110',
+	'NOP':'100111',
+	'VPM_READ':'110000',
+	'VPM_LD_BUSY':'110001',
+	'VPM_LD_WAIT':'110010'
+}
+
+addrBr={
+	'nop':'100111',
+
+	'UNIFORM_READ':'100000',
+	'QPU_NUMBER':'100110',
+	'NOP':'100111',
+	'VPM_READ':'110000',
+	'VPM_ST_BUSY':'110001',
+	'VPM_ST_WAIT':'110010'
+}
+
 #Let's cooking!
 def mine():
 	global labels, c

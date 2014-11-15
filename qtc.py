@@ -507,7 +507,7 @@ def locate_w_register(id):
 		try:
 			addrBw[id]
 		except KeyError:
-			sys.exit(sys.argv[0]+': locate_w_register: error: unknown id: '+cond)
+			sys.exit(sys.argv[0]+': locate_w_register: error: unknown id: '+id)
 		else:
 			return 1 #indicates Bw
 	else:

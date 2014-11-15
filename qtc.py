@@ -159,17 +159,37 @@ def mine():
 			else:
 				outbin('0')
 
-			#WARNING: write swap is not supported (yet)
-			outbin('0')
+			w_location=locate_w_register(tokens[1])
+			if opflag and w_location==0:
+				ws=False
+			elif opflag and w_location==1:
+				ws=True
+			elif (not opflag) and w_location==0:
+				ws=True
+			elif (not opflag) and w_location==1:
+				ws=False
+			else:
+				sys.exit(sys.argv[0]+': error: %d: w_location may be invalid: %d'%(c, w_location))
+
+			if not ws:
+				outbin('0')
+			else:
+				outbin('1')
 
 			if opflag:
-				outbin(addrAw_str_to_bin(tokens[1]))
+				if not ws:
+					outbin(addrAw_str_to_bin(tokens[1]))
+				else:
+					outbin(addrBw_str_to_bin(tokens[1]))
 				outbin('100111')
 				outbin('000')
 				outbin(opbin)
 			else:
 				outbin('100111')
-				outbin(addrBw_str_to_bin(tokens[1]))
+				if not ws:
+					outbin(addrBw_str_to_bin(tokens[1]))
+				else:
+					outbin(addrAw_str_to_bin(tokens[1]))
 				outbin(opbin)
 				outbin('00000')
 
@@ -268,9 +288,22 @@ def mine():
 				outbin('1')
 			else:
 				outbin('0')
-			outbin('0')
 
-			outbin(addrAw_str_to_bin(tokens[1]))
+			w_location=locate_w_register(tokens[1])
+			if w_location==0:
+				ws=False
+			elif w_location==1:
+				ws=True
+			else:
+				sys.exit(sys.argv[0]+': error: %d: w_location may be invalid: %d'%(c, w_location))
+
+			if not ws:
+				outbin('0')
+				outbin(addrAw_str_to_bin(tokens[1]))
+			else:
+				outbin('1')
+				outbin(addrBw_str_to_bin(tokens[1]))
+
 			outbin('100111')
 
 			n=int(tokens[2][1:])
@@ -444,6 +477,19 @@ def complement_num_32(n):
 		return int(s, 2)
 	else:
 		return n
+
+def locate_w_register(id):
+	try:
+		addrAw[id]
+	except KeyError:
+		try:
+			addrBw[id]
+		except KeyError:
+			sys.exit(sys.argv[0]+': locate_w_register: error: unknown id: '+cond)
+		else:
+			return 1 #indicates Bw
+	else:
+		return 0 #indicates Aw
 
 if __name__=='__main__':
 	mine()

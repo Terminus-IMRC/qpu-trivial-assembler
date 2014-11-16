@@ -182,6 +182,8 @@ def mine():
 				outbin('0')
 
 			w_location=locate_w_register(tokens[1])
+			if w_location==2:
+				w_location=0
 			if opflag and w_location==0:
 				ws=False
 			elif opflag and w_location==1:
@@ -239,6 +241,8 @@ def mine():
 				else:
 					use_mux=False
 					r_location=locate_r_register(tokens[3])
+					if r_location==2:
+						r_location=0
 					if r_location!=0 and r_location!=1:
 						sys.exit(sys.argv[0]+': error: %d: r_location may be invalid: %d'%(c, r_location))
 
@@ -283,6 +287,8 @@ def mine():
 				else:
 					use_mux=False
 					r_location=locate_r_register(tokens[2])
+					if r_location==2:
+						r_location=0
 					if r_location!=0 and r_location!=1:
 						sys.exit(sys.argv[0]+': error: %d: r_location may be invalid: %d'%(c, r_location))
 
@@ -327,18 +333,27 @@ def mine():
 				else:
 					use_mux_2=False
 					r_location_2=locate_r_register(tokens[2])
-					if r_location_2!=0 and r_location_2!=1:
+					if r_location_2!=0 and r_location_2!=1 and r_location_2!=2:
 						sys.exit(sys.argv[0]+': error: %d: r_location_2 may be invalid: %d'%(c, r_location_2))
 				if tokens[3]=='r0' or tokens[3]=='r1' or tokens[3]=='r2' or tokens[3]=='r3' or tokens[3]=='r4' or tokens[3]=='r5':
 					use_mux_3=True
 				else:
 					use_mux_3=False
 					r_location_3=locate_r_register(tokens[3])
-					if r_location_3!=0 and r_location_3!=1:
+					if r_location_3!=0 and r_location_3!=1 and r_location_3!=2:
 						sys.exit(sys.argv[0]+': error: %d: r_location_3 may be invalid: %d'%(c, r_location_3))
 
-				if (not use_mux_2) and (not use_mux_3) and (r_location_2==r_location_3):
-					sys.exit(sys.argv[0]+': error: %d: attempting to read from the same register file space(A or B)'%(c))
+				if (not use_mux_2) and (not use_mux_3):
+					if r_location_2==2 and r_location_3==2:
+						r_location_2=0
+						r_location_3=1
+					elif r_location_2==2 and r_location_3!=2:
+						r_location_2=1-r_location_3
+					elif r_location_2!=2 and r_location_3==2:
+						r_location_3=1-r_location_2
+
+					if r_location_2==r_location_3:
+						sys.exit(sys.argv[0]+': error: %d: attempting to read from the same register file space(A or B)'%(c))
 
 				if use_mux_2:
 					outbin('100111')
@@ -447,6 +462,8 @@ def mine():
 				outbin('0')
 
 			w_location=locate_w_register(tokens[1])
+			if w_location==2:
+				w_location=0
 			if w_location==0:
 				ws=False
 			elif w_location==1:
@@ -652,30 +669,48 @@ def complement_num_32(n):
 		return n
 
 def locate_w_register(id):
+	res=0
+	except_on_A=False
+
 	try:
 		addrAw[id]
 	except KeyError:
-		try:
-			addrBw[id]
-		except KeyError:
-			sys.exit(sys.argv[0]+': locate_w_register: error: unknown id: '+id)
-		else:
-			return 1 #indicates Bw
+		except_on_A=True
 	else:
-		return 0 #indicates Aw
+		res+=1
+
+	try:
+		addrBw[id]
+	except KeyError:
+		if except_on_A:
+			sys.exit(sys.argv[0]+': locate_w_register: error: unknown id: '+id)
+	else:
+		res+=2
+
+	res-=1
+	return res #0=Aw, 1=Bw, 2=both
 
 def locate_r_register(id):
+	res=0
+	except_on_A=False
+
 	try:
 		addrAr[id]
 	except KeyError:
-		try:
-			addrBr[id]
-		except KeyError:
-			sys.exit(sys.argv[0]+': locate_r_register: error: unknown id: '+id)
-		else:
-			return 1 #indicates Br
+		except_on_A=True
 	else:
-		return 0 #indicates Ar
+		res+=1
+
+	try:
+		addrBr[id]
+	except KeyError:
+		if except_on_A:
+			sys.exit(sys.argv[0]+': locate_r_register: error: unknown id: '+id)
+	else:
+		res+=2
+
+	res-=1
+	return res #0=Ar, 1=Br, 2=both
 
 if __name__=='__main__':
 	mine()

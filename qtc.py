@@ -376,11 +376,11 @@ def mine():
 						outbin(mux_str_to_bin(tokens[3]))
 					elif use_mux_2 and (not use_mux_3):
 						if r_location_3==0:
-							outbin('110')
+							outbin('111')
 							outbin(mux_str_to_bin(tokens[2]))
 						else:
 							outbin(mux_str_to_bin(tokens[2]))
-							outbin('110')
+							outbin('111')
 					elif (not use_mux_2) and use_mux_3:
 						if r_location_2==0:
 							outbin('110')

@@ -67,6 +67,23 @@ addrBr={
 	'VPM_ST_WAIT':'110010'
 }
 
+opAdd={
+	'nop':'00000',
+	'add':'01100',
+	'sub':'01101',
+	'min':'10010',
+	'max':'10011',
+	'and':'10100',
+	'or':'10101',
+	'xor':'01110',
+	'not':'10111',
+	'clz':'11000'
+}
+
+opMul={
+	'mul24':'010'
+}
+
 #Let's cooking!
 def mine():
 	global labels, c
@@ -130,42 +147,7 @@ def mine():
 			outbin('0')
 			outbin('0000')
 
-			opflag=None #True for add and False for mul
-			if op=='nop':
-				opbin='00000'
-				opflag=True
-			elif op=='add':
-				opbin='01100'
-				opflag=True
-			elif op=='sub':
-				opbin='01101'
-				opflag=True
-			elif op=='min':
-				opbin='10010'
-				opflag=True
-			elif op=='max':
-				opbin='10011'
-				opflag=True
-			elif op=='and':
-				opbin='10100'
-				opflag=True
-			elif op=='or':
-				opbin='10101'
-				opflag=True
-			elif op=='xor':
-				opbin='01110'
-				opflag=True
-			elif op=='not':
-				opbin='10111'
-				opflag=True
-			elif op=='clz':
-				opbin='11000'
-				opflag=True
-			elif op=='mul24':
-				opbin='010'
-				opflag=False
-			else:
-				sys.exit(sys.argv[0]+': error: %d: invalid alu op name: '%(c)+op)
+			(opbin, opflag)=detect_op(op)
 
 			condbin=alucond_str_to_bin(cond)
 
@@ -711,6 +693,23 @@ def locate_r_register(id):
 
 	res-=1
 	return res #0=Ar, 1=Br, 2=both
+
+def detect_op(id):
+	#opflag is True for add and False for mul
+
+	try:
+		opAdd[id]
+	except KeyError:
+		pass
+	else:
+		return (opAdd[id], True)
+
+	try:
+		opMul[id]
+	except KeyError:
+		sys.exit(sys.argv[0]+': detect_op: error: invalid alu op name: '+id)
+	else:
+		return (opMul[id], False)
 
 if __name__=='__main__':
 	mine()

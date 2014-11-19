@@ -683,6 +683,31 @@ def mine():
 
 			outbin(tokens[1])
 
+		elif insb=='program_end':
+			if insproplen!=1:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction properties: %d\n'%(c, insproplen))
+			if len(tokens)!=1:
+				sys.exit(sys.argv[0]+': error: %d: invalid the number of the instruction tokens: %d'%(c, len(tokens)))
+
+			outbin('0011')
+			outbin('000')
+			outbin('0')
+			outbin('0000')
+			outbin('000')
+			outbin('000')
+			outbin('0')
+			outbin('0')
+			outbin('100111')
+			outbin('100111')
+			outbin('000')
+			outbin('00000')
+			outbin('100111')
+			outbin('100111')
+			outbin('110')
+			outbin('110')
+			outbin('111')
+			outbin('111')
+
 		else:
 			sys.exit(sys.argv[0]+': error: %d: invalid instruction name: '%(c)+insb)
 

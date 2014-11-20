@@ -375,7 +375,7 @@ def mine():
 					outbin('111')
 					outbin('111')
 			elif tokens[2][0]=='#':
-				if tokens[3]=='r0' or tokens[3]=='r1' or tokens[3]=='r2' or tokens[3]=='r3' or tokens[3]=='r4' or tokens[3]=='r5':
+				if re.match('^r[0-5]$', tokens[3])!=None:
 					use_mux=True
 				else:
 					use_mux=False
@@ -421,7 +421,7 @@ def mine():
 							outbin('111')
 							outbin('110')
 			elif tokens[3][0]=='#':
-				if tokens[2]=='r0' or tokens[2]=='r1' or tokens[2]=='r2' or tokens[2]=='r3' or tokens[2]=='r4' or tokens[2]=='r5':
+				if re.match('^r[0-5]$', tokens[2])!=None:
 					use_mux=True
 				else:
 					use_mux=False
@@ -467,14 +467,14 @@ def mine():
 							outbin('111')
 							outbin('110')
 			else:
-				if tokens[2]=='r0' or tokens[2]=='r1' or tokens[2]=='r2' or tokens[2]=='r3' or tokens[2]=='r4' or tokens[2]=='r5':
+				if re.match('^r[0-5]$', tokens[2])!=None:
 					use_mux_2=True
 				else:
 					use_mux_2=False
 					r_location_2=locate_r_register(tokens[2])
 					if r_location_2!=0 and r_location_2!=1 and r_location_2!=2:
 						sys.exit(sys.argv[0]+': error: %d: r_location_2 may be invalid: %d'%(c, r_location_2))
-				if tokens[3]=='r0' or tokens[3]=='r1' or tokens[3]=='r2' or tokens[3]=='r3' or tokens[3]=='r4' or tokens[3]=='r5':
+				if re.match('^r[0-5]$', tokens[3])!=None:
 					use_mux_3=True
 				else:
 					use_mux_3=False

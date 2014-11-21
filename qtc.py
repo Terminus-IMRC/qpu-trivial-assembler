@@ -356,7 +356,7 @@ def mine():
 				outbin(opbin)
 				outbin('00000')
 
-			#WARNING: negative int and float immediate is not supported yet
+			#WARNING: float immediate is not supported yet
 			if tokens[2][0]=='#' and tokens[3][0]=='#':
 				if int(tokens[2][1:])!=int(tokens[3][1:]):
 					sys.exit(sys.argv[0]+': error: %d: different immediates are specified to alu'%(c))

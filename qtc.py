@@ -767,7 +767,7 @@ def imm_str_to_bin(id):
 		n=int(id)
 		if not(n>=-16 and n<=15):
 			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
-		s=int_to_6binstr(n)
+		s='0'+int_to_5binstr(n)
 		return s
 	elif re.match('^[0-9][0-9]*\.0$', id)!=None:
 		tn=re.sub('\.0$', '', id)
@@ -849,12 +849,12 @@ def complement_num_32(n):
 	else:
 		return n
 
-def int_to_6binstr(n):
+def int_to_5binstr(n):
 	if n<0:
-		s=bin(complement_num_6(n))[3:]
+		s=bin(complement_num_5(n))[3:]
 	else:
 		s=bin(n)[2:]
-	b="%06d"%(int(s))
+	b="%05d"%(int(s))
 	if n<0:
 		b='1'+b[1:]
 	else:
@@ -862,12 +862,12 @@ def int_to_6binstr(n):
 
 	return b
 
-def complement_num_6(n):
+def complement_num_5(n):
 	if n<0:
 		n=-n
 		n-=1
-		s="%06d"%(int(bin(n)[2:]))
-		for i in range(6):
+		s="%05d"%(int(bin(n)[2:]))
+		for i in range(5):
 			if s[i]=='0':
 				s=s[:i]+'1'+s[i+1:]
 			else:

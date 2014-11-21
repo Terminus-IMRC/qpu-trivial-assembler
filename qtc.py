@@ -763,7 +763,7 @@ def addrBr_str_to_bin(id):
 
 def imm_str_to_bin(id):
 	n=int(id)
-	if not(n>=-15 and n<=17):
+	if not(n>=-16 and n<=15):
 		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
 	s=int_to_6binstr(n)
 	return s

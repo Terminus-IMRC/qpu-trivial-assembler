@@ -781,6 +781,18 @@ def imm_str_to_bin(id):
 
 		n=32+int(log2(tnn))
 		return "%06d"%(int(bin(n)[2:]))
+	elif re.match('^1\.0/[0-9][0-9]*\.0$', id)!=None:
+		tn=re.sub('^1\.0/([0-9][0-9]*)\.0$', '\\1', id)
+		if re.search('[^0-9]', tn)!=None:
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of the float number: '%(c)+id)
+		tnn=int(tn)
+		if not (tnn>=2 and tnn<=256):
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the float number: '%(c)+id)
+		elif log2(tnn)!=math.floor(log2(tnn)):
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: specified float number is not the factorial of 2: '%(c)+id)
+
+		n=47+1-int(log2(tnn))
+		return "%06d"%(int(bin(n)[2:]))
 	else:
 		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of small immediate: '%(c)+id)
 

@@ -763,9 +763,10 @@ def addrBr_str_to_bin(id):
 
 def imm_str_to_bin(id):
 	n=int(id)
-	if not(n>=0 and n<=17):
+	if not(n>=-15 and n<=17):
 		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
-	return "%06d"%(int(bin(n)[2:]))
+	s=int_to_6binstr(n)
+	return s
 
 def mux_str_to_bin(id):
 	if id=='r0':
@@ -824,6 +825,33 @@ def complement_num_32(n):
 		n-=1
 		s="%032d"%(int(bin(n)[2:]))
 		for i in range(32):
+			if s[i]=='0':
+				s=s[:i]+'1'+s[i+1:]
+			else:
+				s=s[:i]+'0'+s[i+1:]
+		return int(s, 2)
+	else:
+		return n
+
+def int_to_6binstr(n):
+	if n<0:
+		s=bin(complement_num_6(n))[3:]
+	else:
+		s=bin(n)[2:]
+	b="%06d"%(int(s))
+	if n<0:
+		b='1'+b[1:]
+	else:
+		b='0'+b[1:]
+
+	return b
+
+def complement_num_6(n):
+	if n<0:
+		n=-n
+		n-=1
+		s="%06d"%(int(bin(n)[2:]))
+		for i in range(6):
 			if s[i]=='0':
 				s=s[:i]+'1'+s[i+1:]
 			else:

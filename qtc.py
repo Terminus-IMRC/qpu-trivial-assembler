@@ -359,7 +359,7 @@ def mine():
 
 			#WARNING: float immediate is not supported yet
 			if tokens[2][0]=='#' and tokens[3][0]=='#':
-				if int(tokens[2][1:])!=int(tokens[3][1:]):
+				if tokens[2][1:]!=tokens[3][1:]:
 					sys.exit(sys.argv[0]+': error: %d: different immediates are specified to alu'%(c))
 
 				outbin('100111')

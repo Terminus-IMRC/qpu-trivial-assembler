@@ -2,6 +2,7 @@
 
 import sys
 import re
+import math
 
 out_lines=['']
 labels={}
@@ -762,11 +763,26 @@ def addrBr_str_to_bin(id):
 	return addr
 
 def imm_str_to_bin(id):
-	n=int(id)
-	if not(n>=-16 and n<=15):
-		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
-	s=int_to_6binstr(n)
-	return s
+	if re.match('^[0-9][0-9]*$', id)!=None or re.match('^-[0-9][0-9]*$', id)!=None:
+		n=int(id)
+		if not(n>=-16 and n<=15):
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
+		s=int_to_6binstr(n)
+		return s
+	elif re.match('^[0-9][0-9]*\.0$', id)!=None:
+		tn=re.sub('\.0$', '', id)
+		if re.search('[^0-9]', tn)!=None:
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of the float number: '%(c)+id)
+		tnn=int(tn)
+		if not (tnn>=1 and tnn<=128):
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the float number: '%(c)+id)
+		elif log2(tnn)!=math.floor(log2(tnn)):
+			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: specified float number is not the factorial of 2: '%(c)+id)
+
+		n=32+int(log2(tnn))
+		return "%06d"%(int(bin(n)[2:]))
+	else:
+		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of small immediate: '%(c)+id)
 
 def mux_str_to_bin(id):
 	if id=='r0':
@@ -920,6 +936,9 @@ def detect_op(id):
 		sys.exit(sys.argv[0]+': detect_op: error: invalid alu op name: '+id)
 	else:
 		return (opMul[id], False)
+
+def log2(n):
+	return math.log(n)/math.log(2)
 
 if __name__=='__main__':
 	mine()

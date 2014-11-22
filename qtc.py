@@ -252,7 +252,7 @@ def mine():
 		except EOFError:
 			break
 
-		tokens=[i.strip() for i in s.split(',')]
+		tokens=[i.replace(' ', '') for i in s.split(',')]
 
 		if len(tokens)==1 and len(tokens[0])==0:
 			continue

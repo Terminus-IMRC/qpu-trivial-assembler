@@ -887,33 +887,6 @@ def complement_num_32(n):
 	else:
 		return n
 
-def int_to_5binstr(n):
-	if n<0:
-		s=bin(complement_num_5(n))[3:]
-	else:
-		s=bin(n)[2:]
-	b="%05d"%(int(s))
-	if n<0:
-		b='1'+b[1:]
-	else:
-		b='0'+b[1:]
-
-	return b
-
-def complement_num_5(n):
-	if n<0:
-		n=-n
-		n-=1
-		s="%05d"%(int(bin(n)[2:]))
-		for i in range(5):
-			if s[i]=='0':
-				s=s[:i]+'1'+s[i+1:]
-			else:
-				s=s[:i]+'0'+s[i+1:]
-		return int(s, 2)
-	else:
-		return n
-
 def locate_w_register(id):
 	res=0
 	except_on_A=False

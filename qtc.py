@@ -244,6 +244,57 @@ opMul={
 	'v8subs':'111'
 }
 
+aluimm={
+	'0':'000000',
+	'1':'000001',
+	'2':'000010',
+	'3':'000011',
+	'4':'000100',
+	'5':'000101',
+	'6':'000110',
+	'7':'000111',
+	'8':'001000',
+	'9':'001001',
+	'10':'001010',
+	'11':'001011',
+	'12':'001100',
+	'13':'001101',
+	'14':'001110',
+	'15':'001111',
+	'-16':'010000',
+	'-15':'010001',
+	'-14':'010010',
+	'-13':'010011',
+	'-12':'010100',
+	'-11':'010101',
+	'-10':'010110',
+	'-9':'010111',
+	'-8':'011000',
+	'-7':'011001',
+	'-6':'011010',
+	'-5':'011011',
+	'-4':'011100',
+	'-3':'011101',
+	'-2':'011110',
+	'-1':'011111',
+	'1.0':'100000',
+	'2.0':'100001',
+	'4.0':'100010',
+	'8.0':'100011',
+	'16.0':'100100',
+	'32.0':'100101',
+	'64.0':'100110',
+	'128.0':'100111',
+	'1.0/256.0':'101000',
+	'1.0/128.0':'101001',
+	'1.0/64.0':'101010',
+	'1.0/32.0':'101011',
+	'1.0/16.0':'101100',
+	'1.0/8.0':'101101',
+	'1.0/4.0':'101110',
+	'1.0/2.0':'101111'
+}
+
 #Let's cooking!
 def mine():
 	global labels, c
@@ -764,38 +815,12 @@ def addrBr_str_to_bin(id):
 	return addr
 
 def imm_str_to_bin(id):
-	if re.match('^[0-9][0-9]*$', id)!=None or re.match('^-[0-9][0-9]*$', id)!=None:
-		n=int(id)
-		if not(n>=-16 and n<=15):
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the number: '%(c)+id)
-		s='0'+int_to_5binstr(n)
-		return s
-	elif re.match('^[0-9][0-9]*\.0$', id)!=None:
-		tn=re.sub('\.0$', '', id)
-		if re.search('[^0-9]', tn)!=None:
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of the float number: '%(c)+id)
-		tnn=int(tn)
-		if not (tnn>=1 and tnn<=128):
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the float number: '%(c)+id)
-		elif log2(tnn)!=math.floor(log2(tnn)):
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: specified float number is not the factorial of 2: '%(c)+id)
-
-		n=32+int(log2(tnn))
-		return "%06d"%(int(bin(n)[2:]))
-	elif re.match('^1\.0/[0-9][0-9]*\.0$', id)!=None:
-		tn=re.sub('^1\.0/([0-9][0-9]*)\.0$', '\\1', id)
-		if re.search('[^0-9]', tn)!=None:
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of the float number: '%(c)+id)
-		tnn=int(tn)
-		if not (tnn>=2 and tnn<=256):
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the range of the float number: '%(c)+id)
-		elif log2(tnn)!=math.floor(log2(tnn)):
-			sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: specified float number is not the factorial of 2: '%(c)+id)
-
-		n=47+1-int(log2(tnn))
-		return "%06d"%(int(bin(n)[2:]))
-	else:
-		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: invalid the format of small immediate: '%(c)+id)
+	try:
+		bin=aluimm[id]
+	except KeyError:
+		sys.exit(sys.argv[0]+': imm_str_to_bin: error: %d: unknown id: '%(c)+id)
+	
+	return bin
 
 def mux_str_to_bin(id):
 	if id=='r0':

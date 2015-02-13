@@ -177,6 +177,7 @@ void process_ambiguous_immed(char *s)
 
 \n|\r|\r\n end_of_line();
 
+^;.*$ puts(yytext);
 [ \t]+ ;
 
 alu {

@@ -1,5 +1,5 @@
 TARGETS := qtc
-SRCS := qtc.c print_bin.c strtol_ex.c
+SRCS_C := qtc.c print_bin.c strtol_ex.c
 SRCS_L := qtc.anal.l
 CFLAGS := -Wall -Wextra -O2
 CC := gcc
@@ -9,7 +9,7 @@ RM := rm -f
 all:
 
 SRCS_L_C := $(SRCS_L:%.l=%.l.c)
-SRCS += $(SRCS_L_C)
+SRCS := $(SRCS_C) $(SRCS_L_C)
 OBJS := $(SRCS:%.c=%.c.o)
 DEPS := $(SRCS:%.c=%.c.d)
 ALLDEPS = $(MAKEFILE_LIST_SANS_DEPS)

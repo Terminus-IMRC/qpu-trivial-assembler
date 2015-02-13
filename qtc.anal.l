@@ -120,7 +120,8 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 				error("register is file B only\n");
 				exit(EXIT_FAILURE);
 			}
-			inst.raddr_a = reg;
+			if (type3 == REGTYPE3_REG)
+				inst.raddr_a = reg;
 			if (inst.op_mul)
 				inst.mul_a = (type3 == REGTYPE3_ACC ? mux : MUX_REGA);
 			else
@@ -137,7 +138,8 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 				error("register is file A only\n");
 				exit(EXIT_FAILURE);
 			}
-			inst.raddr_b = reg;
+			if (type3 == REGTYPE3_REG)
+				inst.raddr_b = reg;
 			if (inst.op_mul)
 				inst.mul_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
 			else

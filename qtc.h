@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 	typedef enum {
-		SIG_ALU = 0x1,
-		SIG_BRA = 0xf,
-		SIG_LI = 0xe,
+		SIG_ALU = 1,
+		SIG_LI = 14,
+		SIG_BRA = 15,
 	} sig_t;
 
 	typedef enum {

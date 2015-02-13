@@ -63,7 +63,10 @@ static void cond_set(int cond)
 }
 
 #define addr_set(reg, type1, type2, type3, mux) addr_set_backend(reg, REGTYPE1_##type1, REGTYPE2_##type2, REGTYPE3_##type3, mux)
-#define small_immed_set(value) addr_set(((value)), BO, RO, REG, MUX_)
+#define small_immed_set(value) { \
+	inst.sig = SIG_SIMM; \
+	addr_set(((value)), BO, RO, REG, MUX_); \
+}
 
 static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtype3_t type3, mux_t mux)
 {

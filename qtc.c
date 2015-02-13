@@ -14,6 +14,7 @@ void output_inst(inst_t inst, FILE *fp)
 	fputc(' ', fp);
 	switch (inst.sig) {
 		case SIG_ALU:
+		case SIG_SIMM:
 			print_bin(inst.unpack, 3, fp);
 			fputc(' ', fp);
 			print_bin(inst.pm, 1, fp);

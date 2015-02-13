@@ -132,14 +132,20 @@ void process_ambiguous_immed(char *s)
 		error("condition code is specified though instruction is not specified\n");
 		exit(EXIT_FAILURE);
 	}
-	if (inst.sig == SIG_ALU) {
-		if ((-16 > num) && (num > 15)) {
-			error("small immediate out of range\n");
-			exit(EXIT_FAILURE);
-		}
-		small_immed_set(num >= 0 ? num : 32 + num);
-	} else
-		inst.imm = num;
+	switch (inst.sig) {
+		case SIG_ALU:
+		case SIG_SIMM:
+			if ((-16 > num) && (num > 15)) {
+				error("small immediate out of range\n");
+				exit(EXIT_FAILURE);
+			}
+			small_immed_set(num >= 0 ? num : 32 + num);
+			break;
+		case SIG_LI:
+		case SIG_BRA:
+			inst.imm = num;
+			break;
+	}
 }
 %}
 

@@ -12,7 +12,7 @@ long int strtol_ex(const char *nptr)
 	long int num;
 
 	i = 0;
-	while (*nptr++) {
+	do {
 		if (i >= 32) {
 			error("specified number is too big");
 			exit(EXIT_FAILURE);
@@ -22,16 +22,17 @@ long int strtol_ex(const char *nptr)
 		}
 		if(!isspace(*nptr))
 			str[i ++] = *nptr;
-	}
+	} while (*nptr++);
 	str[i] = '\0';
 
-	if (!strcmp(nptr, "0b")) {
+	if (!strncmp(str, "0b", 2)) {
 		base = 2;
-		nptr += 2;
-	}
+		i = 2;
+	} else
+		i= 0;
 
 	errno = 0;
-	num = strtoul(str, NULL, base);
+	num = strtoul(str + i, NULL, base);
 
 	if ((errno == ERANGE && (num == LONG_MAX || num == LONG_MIN)) || (errno != 0 && num == 0)) {
 		error("strtoul: %s\n", strerror(errno));

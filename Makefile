@@ -1,5 +1,5 @@
 TARGETS := qtc
-SRCS := qtc.c print_bin.c strtoul_ex.c
+SRCS := qtc.c print_bin.c strtol_ex.c
 SRCS_L := qtc.anal.l
 CFLAGS := -Wall -Wextra -O2
 CC := gcc

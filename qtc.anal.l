@@ -5,7 +5,7 @@
 #include <strings.h>
 #include <stdint.h>
 #include "qtc.h"
-#include "strtoul_ex.h"
+#include "strtol_ex.h"
 #include "error.h"
 
 typedef enum {
@@ -63,6 +63,7 @@ static void cond_set(int cond)
 }
 
 #define addr_set(reg, type1, type2, type3, mux) addr_set_backend(reg, REGTYPE1_##type1, REGTYPE2_##type2, REGTYPE3_##type3, mux)
+#define small_immed_set(value) addr_set(((value)), BO, RO, REG, MUX_)
 
 static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtype3_t type3, mux_t mux)
 {
@@ -116,6 +117,24 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 				inst.add_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
 			break;
 	}
+}
+
+void process_ambiguous_immed(char *s)
+{
+	long int num = strtol_ex(s);
+
+	if (!is_touched) {
+		error("condition code is specified though instruction is not specified\n");
+		exit(EXIT_FAILURE);
+	}
+	if (inst.sig == SIG_ALU) {
+		if ((-16 > num) && (num > 15)) {
+			error("small immediate out of range\n");
+			exit(EXIT_FAILURE);
+		}
+		small_immed_set(num >= 0 ? num : 32 + num);
+	} else
+		inst.imm = num;
 }
 %}
 
@@ -305,7 +324,8 @@ QUAD_Y addr_set(41, BO, WO, REG, MUX_);
 MS_FLAGS addr_set(42, AO, RW, REG, MUX_);
 REV_FLAG addr_set(42, BO, RW, REG, MUX_);
 
-#(0[box]){0,1}[0-9a-fA-F]+ inst.imm = strtoul_ex(yytext);
+#-{0,1}(0[box]){0,1}[0-9a-fA-F]+ process_ambiguous_immed(yytext);
+#1.0 small_immed_set(32);
 
 , {
 	cstep ++;

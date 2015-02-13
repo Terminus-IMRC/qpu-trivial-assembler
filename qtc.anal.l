@@ -5,6 +5,7 @@
 #include <strings.h>
 #include <stdint.h>
 #include "qtc.h"
+#include "strtoul_ex.h"
 #include "error.h"
 
 typedef enum {
@@ -303,6 +304,8 @@ QUAD_X addr_set(41, AO, WO, REG, MUX_);
 QUAD_Y addr_set(41, BO, WO, REG, MUX_);
 MS_FLAGS addr_set(42, AO, RW, REG, MUX_);
 REV_FLAG addr_set(42, BO, RW, REG, MUX_);
+
+#(0[box]){0,1}[0-9a-fA-F]+ inst.imm = strtoul_ex(yytext);
 
 , {
 	cstep ++;

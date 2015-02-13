@@ -366,6 +366,37 @@ TMU1_B addr_set(63, AB, WO, REG, MUX_);
 
 #-{0,1}(0[box]){0,1}[0-9a-fA-F]+ process_ambiguous_immed(yytext);
 #1\.0 small_immed_set(32);
+#2\.0 small_immed_set(33);
+#4\.0 small_immed_set(34);
+#8\.0 small_immed_set(35);
+#16\.0 small_immed_set(36);
+#32\.0 small_immed_set(37);
+#64\.0 small_immed_set(38);
+#128\.0 small_immed_set(39);
+#1(\.0){0,1}/256(\.0){0,1} small_immed_set(40);
+#1(\.0){0,1}/128(\.0){0,1} small_immed_set(41);
+#1(\.0){0,1}/64(\.0){0,1} small_immed_set(42);
+#1(\.0){0,1}/32(\.0){0,1} small_immed_set(43);
+#1(\.0){0,1}/16(\.0){0,1} small_immed_set(44);
+#1(\.0){0,1}/8(\.0){0,1} small_immed_set(45);
+#1(\.0){0,1}/4(\.0){0,1} small_immed_set(46);
+#1(\.0){0,1}/2(\.0){0,1} small_immed_set(47);
+#vrr5 small_immed_set(48);
+#vr1 small_immed_set(49);
+#vr2 small_immed_set(50);
+#vr3 small_immed_set(51);
+#vr4 small_immed_set(52);
+#vr5 small_immed_set(53);
+#vr6 small_immed_set(54);
+#vr7 small_immed_set(55);
+#vr8 small_immed_set(56);
+#vr9 small_immed_set(57);
+#vr10 small_immed_set(58);
+#vr11 small_immed_set(59);
+#vr12 small_immed_set(60);
+#vr13 small_immed_set(61);
+#vr14 small_immed_set(62);
+#vr15 small_immed_set(63);
 
 , {
 	cstep ++;

@@ -150,7 +150,7 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 
 void process_ambiguous_immed(char *s)
 {
-	long int num = strtol_ex(s);
+	long int num = strtol_ex(s + 1);
 
 	if (!is_touched) {
 		error("condition code is specified though instruction is not specified\n");

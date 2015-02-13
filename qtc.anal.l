@@ -43,6 +43,28 @@ static int cstep = 0;
 static _Bool is_touched = 0;
 static _Bool is_cond_set = 0;
 
+static void end_of_line()
+{
+	linenum ++;
+
+	if (is_touched) {
+		if (!is_cond_set) {
+			if (inst.op_mul)
+				inst.cond_mul = 1;
+			else
+				inst.cond_add = 1;
+		}
+
+		output_inst(inst, stdout);
+
+		plinenum ++;
+		reset_inst(&inst);
+		cstep = 0;
+		is_touched = 0;
+		is_cond_set = 0;
+	}
+}
+
 static void cond_set(int cond)
 {
 	if (!is_touched) {
@@ -153,26 +175,7 @@ void process_ambiguous_immed(char *s)
 
 %%
 
-\n|\r|\r\n {
-	linenum ++;
-
-	if (is_touched) {
-		if (!is_cond_set) {
-			if (inst.op_mul)
-				inst.cond_mul = 1;
-			else
-				inst.cond_add = 1;
-		}
-
-		output_inst(inst, stdout);
-
-		plinenum ++;
-		reset_inst(&inst);
-		cstep = 0;
-		is_touched = 0;
-		is_cond_set = 0;
-	}
-}
+\n|\r|\r\n end_of_line();
 
 [ \t]+ ;
 

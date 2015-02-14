@@ -42,6 +42,7 @@ static inst_t inst;
 static int cstep = 0;
 static _Bool is_touched = 0;
 static _Bool is_cond_set = 0;
+static _Bool must_be_sig_simm = 0;
 
 static void end_of_line()
 {
@@ -62,6 +63,7 @@ static void end_of_line()
 		cstep = 0;
 		is_touched = 0;
 		is_cond_set = 0;
+		must_be_sig_simm = 0;
 	}
 }
 
@@ -136,6 +138,9 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 				exit(EXIT_FAILURE);
 			} else if (type1 == REGTYPE1_AO) {
 				error("register is file A only\n");
+				exit(EXIT_FAILURE);
+			} else if (must_be_sig_simm && inst.sig != SIG_SIMM) {
+				error("immediate must be specified since the third column is -\n");
 				exit(EXIT_FAILURE);
 			}
 			if (type3 == REGTYPE3_REG)
@@ -411,6 +416,17 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 #vr13 small_immed_set(61);
 #vr14 small_immed_set(62);
 #vr15 small_immed_set(63);
+
+- {
+	if ((inst.sig == SIG_ALU) && (cstep == 2)) {
+		must_be_sig_simm = !0;
+		if (inst.op_mul)
+			inst.mul_a = MUX_REGB;
+		else
+			inst.add_a = MUX_REGB;
+	} else
+		error_invalid_character(*yytext);
+}
 
 , {
 	cstep ++;

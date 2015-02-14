@@ -171,6 +171,12 @@ void process_ambiguous_immed(char *s)
 			break;
 	}
 }
+
+void error_invalid_character(char c)
+{
+	error("extra character found: %c (%d)\n", c, c);
+	exit(EXIT_FAILURE);
+}
 %}
 
 %option noyywrap
@@ -410,10 +416,7 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 	cstep ++;
 }
 
-. {
-	error("extra character found: %c (%d)\n", *yytext, *yytext);
-	exit(EXIT_FAILURE);
-}
+. error_invalid_character(*yytext);
 
 %%
 

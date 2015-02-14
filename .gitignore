@@ -2,3 +2,4 @@ qtc
 *.c.o
 *.l.c
 *.c.d
+*.swp

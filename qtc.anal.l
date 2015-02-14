@@ -263,7 +263,13 @@ li32 {
 \.cs cond_set(6);
 \.cc cond_set(7);
 
-\.sf inst.sf = 1;
+\.sf {
+	if (inst.sig == SIG_BRA) {
+		error("set flag option is specified to bra\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.sf = 1;
+}
 
 ra0 addr_set(0, AO, RW, REG, MUX_);
 ra1 addr_set(1, AO, RW, REG, MUX_);

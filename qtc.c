@@ -70,7 +70,7 @@ void output_inst(inst_t inst, FILE *fp)
 			print_bin(inst.imm, 32, fp);
 			break;
 		case SIG_LI:
-			print_bin(inst.esig, 4, fp);
+			print_bin(inst.esig, 3, fp);
 			fputc(' ', fp);
 			print_bin(inst.pm, 1, fp);
 			fputc(' ', fp);

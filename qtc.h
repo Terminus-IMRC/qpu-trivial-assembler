@@ -5,6 +5,7 @@
 
 	typedef enum {
 		SIG_ALU = 1,
+		SIG_PEND = 3,
 		SIG_SIMM = 13,
 		SIG_LI = 14,
 		SIG_BRA = 15,

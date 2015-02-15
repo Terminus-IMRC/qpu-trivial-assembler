@@ -241,6 +241,9 @@ void process_ambiguous_immed(char *s)
 		case SIG_BRA:
 			inst.imm = num;
 			break;
+		default:
+			error("immediate is not supported in this sig\n");
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -366,6 +369,17 @@ li32 {
 		exit(EXIT_FAILURE);
 	}
 	inst.rel = 1;
+}
+
+\.program_end {
+	if (!is_touched) {
+		error("program_end option is specified though instruction is not specified\n");
+		exit(EXIT_FAILURE);
+	} else if (cstep != 0) {
+		error("program_end option is not specified in first step in the line\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.sig = SIG_PEND;
 }
 
 ra0 addr_set(0, AO, RW, REG, MUX_);

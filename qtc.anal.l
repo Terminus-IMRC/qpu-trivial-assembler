@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "qtc.h"
 #include "strtol_ex.h"
+#include "label_addr.h"
 #include "error.h"
 
 typedef enum {
@@ -50,10 +51,15 @@ static void end_of_line()
 
 	if (is_touched) {
 		if (!is_cond_set) {
-			if (inst.op_mul)
-				inst.cond_mul = 1;
-			else
-				inst.cond_add = 1;
+			if (inst.sig == SIG_BRA) {
+				error("any cond is specified to bra\n");
+				exit(EXIT_FAILURE);
+			} else {
+				if (inst.op_mul)
+					inst.cond_mul = 1;
+				else
+					inst.cond_add = 1;
+			}
 		}
 
 		output_inst(inst, stdout);
@@ -86,6 +92,22 @@ static void cond_set(int cond)
 		inst.cond_add = cond;
 }
 
+static void bra_cond_set(int cond)
+{
+	if (!is_touched) {
+		error("condition code is specified though instruction is not specified\n");
+		exit(EXIT_FAILURE);
+	} else if (cstep != 0) {
+		error("condition code is not specified in first step in the line\n");
+		exit(EXIT_FAILURE);
+	} else if (is_cond_set) {
+		error("condition code is specified more than once\n");
+		exit(EXIT_FAILURE);
+	}
+	is_cond_set = !0;
+	inst.cond_br = cond;
+}
+
 #define addr_set(reg, type1, type2, type3, mux) addr_set_backend(reg, REGTYPE1_##type1, REGTYPE2_##type2, REGTYPE3_##type3, mux)
 #define small_immed_set(value) { \
 	inst.sig = SIG_SIMM; \
@@ -94,62 +116,105 @@ static void cond_set(int cond)
 
 static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtype3_t type3, mux_t mux)
 {
-	switch (cstep) {
-		case 1: /* as a write register */
-			if (type2 == REGTYPE2_RO) {
-				error("read only register\n");
-				exit(EXIT_FAILURE);
-			}
-			if (inst.op_mul) {
-				inst.ws = (type1 == REGTYPE1_AO ? 1 : 0);
-				inst.waddr_mul = reg;
-			} else {
-				inst.ws = (type1 == REGTYPE1_BO ? 1 : 0);
-				inst.waddr_add = reg;
-			}
-			break;
-		case 2: /* as a reg A */
-			if (inst.sig == SIG_LI) {
-				error("load imm instructions do not take any read registers\n");
-				exit(EXIT_FAILURE);
-			} else if (inst.sig == SIG_BRA) {
-				error("register additions for branch instruction is not supported (yet)\n");
-				exit(EXIT_FAILURE);
-			} else if (type2 == REGTYPE2_WO) {
-				error("write only register\n");
-				exit(EXIT_FAILURE);
-			} else if (type1 == REGTYPE1_BO) {
-				error("register is file B only\n");
-				exit(EXIT_FAILURE);
-			}
-			if (type3 == REGTYPE3_REG)
+	if (inst.sig == SIG_BRA) {
+		switch(cstep) {
+			case 1: /* as a read register */
+				if (type2 == REGTYPE2_WO) {
+					error("write only register\n");
+					exit(EXIT_FAILURE);
+				} else if (type1 == REGTYPE1_BO) {
+					error("register is file B only\n");
+					exit(EXIT_FAILURE);
+				} else if (type3 == REGTYPE3_ACC) {
+					/* accumulators are passed with REGTYPE2_RW, but they are acutually RO on registers */
+					error("an accumulator is passed to bra\n");
+					exit(EXIT_FAILURE);
+				}
+				printf("heeee\n");
+				inst.reg = 1;
 				inst.raddr_a = reg;
-			if (inst.op_mul)
-				inst.mul_a = (type3 == REGTYPE3_ACC ? mux : MUX_REGA);
-			else
-				inst.add_a = (type3 == REGTYPE3_ACC ? mux : MUX_REGA);
-			break;
-		case 3: /* as a reg B */
-			if ((inst.sig == SIG_BRA) || (inst.sig == SIG_LI)) {
-				error("load imm instructions and branch instruction do not take extra read registers\n");
+				break;
+			case 2: /* as an add write register */
+				if (type2 == REGTYPE2_RO) {
+					error("read only register\n");
+					exit(EXIT_FAILURE);
+				} else if (type1 == REGTYPE1_BO) {
+					/* so we do not support ws */
+					error("register is file B only\n");
+					exit(EXIT_FAILURE);
+				}
+				inst.waddr_add = reg;
+				break;
+			case 3: /* as a mul write register */
+				if (type2 == REGTYPE2_RO) {
+					error("read only register\n");
+					exit(EXIT_FAILURE);
+				} else if (type1 == REGTYPE1_AO) {
+					/* so we do not support ws */
+					error("register is file A only\n");
+					exit(EXIT_FAILURE);
+				}
+				inst.waddr_mul = reg;
+				break;
+			default:
+				error("too many registers for bra\n");
 				exit(EXIT_FAILURE);
-			} else if (type2 == REGTYPE2_WO) {
-				error("write only register\n");
-				exit(EXIT_FAILURE);
-			} else if (type1 == REGTYPE1_AO) {
-				error("register is file A only\n");
-				exit(EXIT_FAILURE);
-			} else if (must_be_sig_simm && inst.sig != SIG_SIMM) {
-				error("immediate must be specified since the third column is -\n");
-				exit(EXIT_FAILURE);
-			}
-			if (type3 == REGTYPE3_REG)
-				inst.raddr_b = reg;
-			if (inst.op_mul)
-				inst.mul_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
-			else
-				inst.add_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
-			break;
+		}
+	} else {
+		switch (cstep) {
+			case 1: /* as a write register */
+				if (type2 == REGTYPE2_RO) {
+					error("read only register\n");
+					exit(EXIT_FAILURE);
+				}
+				if (inst.op_mul) {
+					inst.ws = (type1 == REGTYPE1_AO ? 1 : 0);
+					inst.waddr_mul = reg;
+				} else {
+					inst.ws = (type1 == REGTYPE1_BO ? 1 : 0);
+					inst.waddr_add = reg;
+				}
+				break;
+			case 2: /* as a reg A */
+				if (inst.sig == SIG_LI) {
+					error("load imm instructions do not take any read registers\n");
+					exit(EXIT_FAILURE);
+				} else if (type2 == REGTYPE2_WO) {
+					error("write only register\n");
+					exit(EXIT_FAILURE);
+				} else if (type1 == REGTYPE1_BO) {
+					error("register is file B only\n");
+					exit(EXIT_FAILURE);
+				}
+				if (type3 == REGTYPE3_REG)
+					inst.raddr_a = reg;
+				if (inst.op_mul)
+					inst.mul_a = (type3 == REGTYPE3_ACC ? mux : MUX_REGA);
+				else
+					inst.add_a = (type3 == REGTYPE3_ACC ? mux : MUX_REGA);
+				break;
+			case 3: /* as a reg B */
+				if (inst.sig == SIG_LI) {
+					error("load imm instructions do not take extra read registers\n");
+					exit(EXIT_FAILURE);
+				} else if (type2 == REGTYPE2_WO) {
+					error("write only register\n");
+					exit(EXIT_FAILURE);
+				} else if (type1 == REGTYPE1_AO) {
+					error("register is file A only\n");
+					exit(EXIT_FAILURE);
+				} else if (must_be_sig_simm && inst.sig != SIG_SIMM) {
+					error("immediate must be specified since the third column is -\n");
+					exit(EXIT_FAILURE);
+				}
+				if (type3 == REGTYPE3_REG)
+					inst.raddr_b = reg;
+				if (inst.op_mul)
+					inst.mul_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
+				else
+					inst.add_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
+				break;
+		}
 	}
 }
 
@@ -255,7 +320,16 @@ li32 {
 \.v8max inst.op_mul = 5;
 
 \.never cond_set(0);
-\.always cond_set(1);
+\.always {
+	if (!is_touched) {
+		error("condition code is specified though instruction is not specified\n");
+		exit(EXIT_FAILURE);
+	}
+	if (inst.sig == SIG_BRA)
+		bra_cond_set(15);
+	else
+		cond_set(1);
+}
 \.zs cond_set(2);
 \.zc cond_set(3);
 \.ns cond_set(4);
@@ -263,12 +337,33 @@ li32 {
 \.cs cond_set(6);
 \.cc cond_set(7);
 
+\.allzs bra_cond_set(0);
+\.allzc bra_cond_set(1);
+\.anyzs bra_cond_set(2);
+\.anyzc bra_cond_set(3);
+\.allns bra_cond_set(4);
+\.allnc bra_cond_set(5);
+\.anyns bra_cond_set(6);
+\.anync bra_cond_set(7);
+\.allcs bra_cond_set(8);
+\.allcc bra_cond_set(9);
+\.anycs bra_cond_set(10);
+\.anycc bra_cond_set(11);
+
 \.sf {
 	if (inst.sig == SIG_BRA) {
 		error("set flag option is specified to bra\n");
 		exit(EXIT_FAILURE);
 	}
 	inst.sf = 1;
+}
+
+\.rel {
+	if (inst.sig != SIG_BRA) {
+		error("rel flag option is specified to non-bra\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.rel = 1;
 }
 
 ra0 addr_set(0, AO, RW, REG, MUX_);
@@ -434,6 +529,24 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 		error_invalid_character(*yytext);
 }
 
+:.+$ {
+	switch (cstep) {
+		case 0:
+			label_addr_add_entry(yytext + 1, plinenum);
+			break;
+		case 4:
+			if (inst.sig == SIG_BRA) {
+				inst.rel = 1; /* set automatically! */
+				/* TODO: is this formula correct? */
+				inst.imm = (int32_t)(label_addr_str_to_linenum(yytext + 1) - 4 - plinenum) * (32 / 8);
+				break;
+			}
+		default:
+			error("unexpected label appearance\n");
+			exit(EXIT_FAILURE);
+	}
+}
+
 , {
 	cstep ++;
 }
@@ -446,9 +559,13 @@ int main()
 {
 	FILE *yyin = stdin;
 
+	label_addr_init();
+
 	reset_inst(&inst);
 
 	yylex();
+
+	label_addr_finalize();
 
 	return 0;
 }

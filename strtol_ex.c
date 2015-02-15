@@ -8,16 +8,20 @@
 long int strtol_ex(const char *nptr)
 {
 	int i, base = 0;
-	char str[32 + 2 + 1];
+	char *str;
 	long int num;
+
+	str = malloc(strlen(nptr) * sizeof(char));
+	if (str == NULL) {
+		error("failed to malloc str\n");
+		exit(EXIT_FAILURE);
+	}
 
 	i = 0;
 	do {
-		if (i >= 32) {
-			error("specified number is too big");
-			exit(EXIT_FAILURE);
-		} else if ((!isdigit(*nptr)) && (!isxdigit(*nptr)) && (!isspace(*nptr)) && *nptr != 'x' && *nptr != '-' && *nptr != '\0') {
+		if ((!isdigit(*nptr)) && (!isxdigit(*nptr)) && (!isspace(*nptr)) && *nptr != 'x' && *nptr != '-' && *nptr != '\0') {
 			error("invalid character: %c (%d)\n", *nptr, *nptr);
+			free(str);
 			exit(EXIT_FAILURE);
 		}
 		if(!isspace(*nptr))
@@ -36,8 +40,11 @@ long int strtol_ex(const char *nptr)
 
 	if ((errno == ERANGE && (num == LONG_MAX || num == LONG_MIN)) || (errno != 0 && num == 0)) {
 		error("strtoul: %s\n", strerror(errno));
+		free(str);
 		exit(EXIT_FAILURE);
 	}
+
+	free(str);
 
 	return num;
 }

@@ -7,7 +7,8 @@
 #include "qtc.h"
 #include "strtol_ex.h"
 #include "label_addr.h"
-#include "error.h"
+
+#define error(str, ...) fprintf(stderr, "%s:%d: %d: error: " str, __FILE__, __LINE__, linenum + 1, ## __VA_ARGS__)
 
 typedef enum {
 	REGTYPE1_AO = 0x1,

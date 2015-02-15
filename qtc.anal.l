@@ -128,6 +128,10 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 					/* accumulators are passed with REGTYPE2_RW, but they are acutually RO on registers */
 					error("an accumulator is passed to bra\n");
 					exit(EXIT_FAILURE);
+				} else if (reg >= 32) {
+					/* TODO: is it right? */
+					error("reg >= 32");
+					exit(EXIT_FAILURE);
 				}
 				inst.reg = 1;
 				inst.raddr_a = reg;

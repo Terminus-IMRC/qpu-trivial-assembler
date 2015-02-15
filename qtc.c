@@ -58,7 +58,7 @@ void output_inst(inst_t inst, FILE *fp)
 			fputc(' ', fp);
 			print_bin(inst.reg, 1, fp);
 			fputc(' ', fp);
-			print_bin(inst.raddr_a, 6, fp);
+			print_bin(inst.raddr_a, 5, fp);
 			fputc(' ', fp);
 			print_bin(inst.ws, 1, fp);
 			fputc(' ', fp);

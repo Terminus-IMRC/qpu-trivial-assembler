@@ -453,6 +453,7 @@ r0|acc0 addr_set(32, AB, RW, ACC, MUX_ACC0);
 r1|acc1 addr_set(33, AB, RW, ACC, MUX_ACC1);
 r2|acc2 addr_set(34, AB, RW, ACC, MUX_ACC2);
 r3|acc3 addr_set(35, AB, RW, ACC, MUX_ACC3);
+r4 addr_set(0, AB, RO, ACC, MUX_ACC4);
 r5 addr_set(37, AB, RW, ACC, MUX_ACC5);
 acc5a addr_set(37, AO, WO, REG, MUX_);
 acc5b addr_set(37, BO, WO, REG, MUX_);

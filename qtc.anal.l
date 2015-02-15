@@ -486,7 +486,7 @@ tmu1_t addr_set(61, AB, WO, REG, MUX_);
 tmu1_r addr_set(62, AB, WO, REG, MUX_);
 tmu1_b addr_set(63, AB, WO, REG, MUX_);
 
-#-{0,1}(0[box]){0,1}[0-9a-fA-F]+ process_ambiguous_immed(yytext);
+#-{0,1}(0[box]){0,1}[0-9a-fA-F \t]+ process_ambiguous_immed(yytext);
 #1\.0 small_immed_set(32);
 #2\.0 small_immed_set(33);
 #4\.0 small_immed_set(34);

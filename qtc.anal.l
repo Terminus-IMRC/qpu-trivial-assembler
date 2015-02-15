@@ -129,7 +129,6 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 					error("an accumulator is passed to bra\n");
 					exit(EXIT_FAILURE);
 				}
-				printf("heeee\n");
 				inst.reg = 1;
 				inst.raddr_a = reg;
 				break;

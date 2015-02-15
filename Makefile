@@ -1,7 +1,7 @@
 TARGETS := qtc
 SRCS_C := qtc.c print_bin.c strtol_ex.c
 SRCS_L := qtc.anal.l
-CFLAGS := -Wall -Wextra -O2
+CFLAGS := -Wall -Wextra -O0
 CC := gcc
 LEX := lex
 RM := rm -f

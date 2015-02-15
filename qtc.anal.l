@@ -47,8 +47,6 @@ static _Bool must_be_sig_simm = 0;
 
 static void end_of_line()
 {
-	linenum ++;
-
 	if (is_touched) {
 		if (!is_cond_set) {
 			if (inst.sig == SIG_BRA) {
@@ -71,6 +69,7 @@ static void end_of_line()
 		is_cond_set = 0;
 		must_be_sig_simm = 0;
 	}
+	linenum ++;
 }
 
 static void cond_set(int cond)

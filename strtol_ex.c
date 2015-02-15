@@ -8,7 +8,7 @@
 long int strtol_ex(const char *nptr)
 {
 	int i, base = 0;
-	char str[32 + 1];
+	char str[32 + 2 + 1];
 	long int num;
 
 	i = 0;

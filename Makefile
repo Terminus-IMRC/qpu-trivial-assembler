@@ -15,6 +15,7 @@ DEPS := $(SRCS:%.c=%.c.d)
 ALLDEPS = $(MAKEFILE_LIST_SANS_DEPS)
 
 .PRECIOUS: $(SRCS_L_C)
+.DELETE_ON_ERROR: $(SRCS_L_C)
 .DELETE_ON_ERROR: $(DEPS)
 
 VALID_MAKECMDGOALS := all $(TARGETS) %.c.o %.c.d %.l.c clean

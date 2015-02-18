@@ -248,6 +248,21 @@ void process_ambiguous_immed(char *s)
 	}
 }
 
+void extra_sig_set(const char *name, sig_t sig)
+{
+	name ++;
+
+	if (!is_touched) {
+		error("%s option is specified though instruction is not specified\n", name);
+		exit(EXIT_FAILURE);
+	} else if (cstep != 0) {
+		error("%s option is not specified in the first step in the line\n", name);
+		exit(EXIT_FAILURE);
+	}
+
+	inst.sig = sig;
+}
+
 void error_invalid_character(char c)
 {
 	error("extra character found: %c (%d)\n", c, c);
@@ -372,16 +387,7 @@ li32 {
 	inst.rel = 1;
 }
 
-\.program_end {
-	if (!is_touched) {
-		error("program_end option is specified though instruction is not specified\n");
-		exit(EXIT_FAILURE);
-	} else if (cstep != 0) {
-		error("program_end option is not specified in first step in the line\n");
-		exit(EXIT_FAILURE);
-	}
-	inst.sig = SIG_PEND;
-}
+\.program_end extra_sig_set(yytext, SIG_PEND);
 
 ra0 addr_set(0, AO, RW, REG, MUX_);
 ra1 addr_set(1, AO, RW, REG, MUX_);

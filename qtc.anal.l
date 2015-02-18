@@ -387,7 +387,18 @@ li32 {
 	inst.rel = 1;
 }
 
+\.break  extra_sig_set(yytext, SIG_BREAK);
+\.thread_switch extra_sig_set(yytext, SIG_TSW);
 \.program_end extra_sig_set(yytext, SIG_PEND);
+\.waitsb extra_sig_set(yytext, SIG_WAITSB);
+\.unlocksb extra_sig_set(yytext, SIG_UNLOCKSB);
+\.last_thread_switch extra_sig_set(yytext, SIG_LTSW);
+\.covload extra_sig_set(yytext, SIG_COVLD);
+\.colload extra_sig_set(yytext, SIG_COLLD);
+\.colload_and_program_end extra_sig_set(yytext, SIG_COLLD_PEND);
+\.tmu0 extra_sig_set(yytext, SIG_TMU0);
+\.tmu1 extra_sig_set(yytext, SIG_TMU1);
+\.amload extra_sig_set(yytext, SIG_AMLD);
 
 ra0 addr_set(0, AO, RW, REG, MUX_);
 ra1 addr_set(1, AO, RW, REG, MUX_);

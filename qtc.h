@@ -4,8 +4,19 @@
 #include <stdio.h>
 
 	typedef enum {
+		SIG_BREAK = 0,
 		SIG_ALU = 1,
+		SIG_TSW = 2,
 		SIG_PEND = 3,
+		SIG_WAITSB = 4,
+		SIG_UNLOCKSB = 5,
+		SIG_LTSW = 6,
+		SIG_COVLD = 7,
+		SIG_COLLD = 8,
+		SIG_COLLD_PEND = 9,
+		SIG_TMU0 = 10,
+		SIG_TMU1 = 11,
+		SIG_AMLD = 12,
 		SIG_SIMM = 13,
 		SIG_LI = 14,
 		SIG_BRA = 15,

@@ -13,8 +13,19 @@ void output_inst(inst_t inst, FILE *fp)
 	print_bin(inst.sig, 4, fp);
 	fputc(' ', fp);
 	switch (inst.sig) {
+		case SIG_BREAK:
 		case SIG_ALU:
+		case SIG_TSW:
 		case SIG_PEND:
+		case SIG_WAITSB:
+		case SIG_UNLOCKSB:
+		case SIG_LTSW:
+		case SIG_COVLD:
+		case SIG_COLLD:
+		case SIG_COLLD_PEND:
+		case SIG_TMU0:
+		case SIG_TMU1:
+		case SIG_AMLD:
 		case SIG_SIMM:
 			print_bin(inst.unpack, 3, fp);
 			fputc(' ', fp);

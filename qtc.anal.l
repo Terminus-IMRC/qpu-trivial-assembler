@@ -232,7 +232,7 @@ void process_ambiguous_immed(char *s)
 	switch (inst.sig) {
 		case SIG_ALU:
 		case SIG_SIMM:
-			if ((-16 > num) && (num > 15)) {
+			if ((-16 > num) || (num > 15)) {
 				error("small immediate out of range\n");
 				exit(EXIT_FAILURE);
 			}

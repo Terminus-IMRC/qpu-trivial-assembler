@@ -277,7 +277,7 @@ void error_invalid_character(char c)
 \n|\r|\r\n end_of_line();
 
 ^[ \t]*;.*$ puts(yytext);
-^[ \t]*!.*$ puts(yytext);
+^[ \t]*!.*$ puts(yytext + 1);
 [ \t]+ ;
 
 alu {

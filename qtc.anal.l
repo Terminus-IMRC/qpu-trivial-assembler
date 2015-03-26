@@ -276,8 +276,8 @@ void error_invalid_character(char c)
 
 \n|\r|\r\n end_of_line();
 
-^;.*$ puts(yytext);
-^!.*$ puts(yytext);
+^[ \t]*;.*$ puts(yytext);
+^[ \t]*!.*$ puts(yytext + 1);
 [ \t]+ ;
 
 alu {
@@ -572,8 +572,7 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 		case 4:
 			if (inst.sig == SIG_BRA) {
 				inst.rel = 1; /* set automatically! */
-				/* TODO: is this formula correct? */
-				inst.imm = (int32_t)(label_addr_str_to_linenum(yytext + 1) - 4 - plinenum) * (32 / 8);
+				inst.imm = (int32_t)(label_addr_str_to_linenum(yytext + 1) - 4 - plinenum) * (64 / 8);
 				break;
 			}
 		default:

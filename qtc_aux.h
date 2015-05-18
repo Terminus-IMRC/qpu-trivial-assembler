@@ -1,5 +1,5 @@
-#ifndef _QTC_AUX_H_INCLUDED_
-#define _QTC_AUX_H_INCLUDED_
+#ifndef _QTC_AUX_H_
+#define _QTC_AUX_H_
 
 #include <stdio.h>
 
@@ -71,4 +71,4 @@
 	void reset_inst(inst_t *p);
 	void output_inst(inst_t inst, FILE *fp);
 
-#endif /* _QTC_AUX_H_INCLUDED_ */
+#endif /* _QTC_AUX_H_ */

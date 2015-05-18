@@ -596,7 +596,6 @@ void qtc_assemble_file(FILE *fp)
 	YY_BUFFER_STATE state;
 
 	label_addr_init();
-
 	reset_inst(&inst);
 
 	yyin = fp;

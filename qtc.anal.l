@@ -611,3 +611,21 @@ void qtc_assemble_file(FILE *fp)
 
 	label_addr_finalize();
 }
+
+void qtc_assemble_string(const char *str)
+{
+	YY_BUFFER_STATE state;
+
+	label_addr_init();
+	reset_inst(&inst);
+
+	state = yy_scan_string(str);
+	if (state == NULL) {
+		error_sane("yy_scan_string returned NULL\n");
+		exit(EXIT_FAILURE);
+	}
+	yylex();
+	yy_delete_buffer(state);
+
+	label_addr_finalize();
+}

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "qtc.h"
+#include "qtc_aux.h"
 #include "print_bin.h"
 
 void reset_inst(inst_t *p)

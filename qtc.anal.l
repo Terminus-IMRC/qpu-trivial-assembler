@@ -4,7 +4,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdint.h>
-#include "qtc.h"
+#include "qtc_aux.h"
 #include "strtol_ex.h"
 #include "label_addr.h"
 

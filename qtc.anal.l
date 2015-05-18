@@ -591,7 +591,7 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 
 int main()
 {
-	FILE *yyin = stdin;
+	yyin = fp;
 
 	label_addr_init();
 

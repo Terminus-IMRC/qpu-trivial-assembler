@@ -10,6 +10,7 @@
 #include "label_addr.h"
 
 #define error(str, ...) fprintf(stderr, "%s:%d: %d: error: " str, __FILE__, __LINE__, linenum + 1, ## __VA_ARGS__)
+#define error_sane(str, ...) fprintf(stderr, "%s:%d: error: " str, __FILE__, __LINE__, ## __VA_ARGS__)
 
 typedef enum {
 	REGTYPE1_AO = 0x1,
@@ -592,13 +593,21 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 
 void qtc_assemble_file(FILE *fp)
 {
-	yyin = fp;
+	YY_BUFFER_STATE state;
 
 	label_addr_init();
 
 	reset_inst(&inst);
 
+	yyin = fp;
+	state = yy_create_buffer(yyin, YY_BUF_SIZE);
+	if (state == NULL) {
+		error_sane("yy_create_buffer returned NULL\n");
+		exit(EXIT_FAILURE);
+	}
+	yy_switch_to_buffer(state);
 	yylex();
+	yy_delete_buffer(state);
 
 	label_addr_finalize();
 }

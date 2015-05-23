@@ -317,6 +317,26 @@ li32 {
 	inst.esig = ESIG_LI32;
 }
 
+lipes {
+	if (is_touched) {
+		error("instruction is specified more than once\n");
+		exit(EXIT_FAILURE);
+	}
+	is_touched = !0;
+	inst.sig = SIG_LI;
+	inst.esig = ESIG_LIPES;
+}
+
+lipeu {
+	if (is_touched) {
+		error("instruction is specified more than once\n");
+		exit(EXIT_FAILURE);
+	}
+	is_touched = !0;
+	inst.sig = SIG_LI;
+	inst.esig = ESIG_LIPEU;
+}
+
 \.nop inst.op_add = 0;
 \.fadd inst.op_add = 1;
 \.fsub inst.op_add = 2;

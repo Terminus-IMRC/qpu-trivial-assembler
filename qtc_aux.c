@@ -99,7 +99,17 @@ void output_inst(inst_t inst, FILE *fp)
 			fputc(' ', fp);
 			print_bin(inst.waddr_mul, 6, fp);
 			fputc(' ', fp);
-			print_bin(inst.imm, 32, fp);
+			switch (inst.esig) {
+				case ESIG_LI32:
+					print_bin(inst.imm, 32, fp);
+					break;
+				case ESIG_LIPES:
+				case ESIG_LIPEU:
+					print_bin(inst.imm >> 16, 16, fp);
+					fputc(' ', fp);
+					print_bin(inst.imm, 16, fp);
+					break;
+			}
 			break;
 	}
 	fputc('\n', fp);

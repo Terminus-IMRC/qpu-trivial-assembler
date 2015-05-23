@@ -26,6 +26,8 @@
 		/* bra also uses this as an empty bits */
 		ESIG_BRA = 0x0,
 		ESIG_LI32 = 0x0,
+		ESIG_LIPES = 0x1,
+		ESIG_LIPEU = 0x3,
 	} esig_t;
 
 	typedef struct {

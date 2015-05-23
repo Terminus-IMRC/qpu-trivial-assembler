@@ -45,6 +45,7 @@ static int linenum = 0, plinenum = 0;
 static inst_t inst;
 static int cstep = 0;
 static _Bool is_touched = 0;
+static _Bool is_to_inc_p = 0;
 static _Bool is_cond_set = 0;
 static _Bool must_be_sig_simm = 0;
 
@@ -71,7 +72,9 @@ static void end_of_line()
 		is_touched = 0;
 		is_cond_set = 0;
 		must_be_sig_simm = 0;
-	}
+	} else if (is_to_inc_p)
+		plinenum ++;
+	is_to_inc_p = 0;
 	linenum ++;
 }
 
@@ -279,7 +282,10 @@ void error_invalid_character(char c)
 \n|\r|\r\n end_of_line();
 
 ^[ \t]*;.*$ puts(yytext);
-^[ \t]*!.*$ puts(yytext + 1);
+^[ \t]*!.*$ {
+	is_to_inc_p = !0;
+	puts(yytext + 1);
+}
 [ \t]+ ;
 
 alu {

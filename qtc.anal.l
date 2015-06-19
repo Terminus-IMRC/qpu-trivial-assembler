@@ -579,30 +579,46 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 #vr15 small_immed_set(63);
 
 - {
-	if (inst.sig == SIG_ALU) {
-		if (requested_same_addr) { /* again */
-			error("both input addrs are -\n");
-			exit(EXIT_FAILURE);
-		}
-		requested_same_addr = !0;
-		switch (cstep) {
-			case 2:
-				if (inst.op_mul)
-					inst.mul_a = MUX_REGB;
-				else
-					inst.add_a = MUX_REGB;
-				break;
-			case 3:
-				if (inst.op_mul)
-					inst.mul_b = MUX_REGA;
-				else
-					inst.add_b = MUX_REGA;
-				break;
-			default:
-				error_invalid_character(*yytext);
-		}
-	} else
-		error_invalid_character(*yytext);
+	switch (inst.sig) {
+		case SIG_BREAK:
+		case SIG_ALU:
+		case SIG_TSW:
+		case SIG_PEND:
+		case SIG_WAITSB:
+		case SIG_UNLOCKSB:
+		case SIG_LTSW:
+		case SIG_COVLD:
+		case SIG_COLLD:
+		case SIG_COLLD_PEND:
+		case SIG_TMU0:
+		case SIG_TMU1:
+		case SIG_AMLD:
+		case SIG_SIMM:
+			if (requested_same_addr) { /* again */
+				error("both input addrs are -\n");
+				exit(EXIT_FAILURE);
+			}
+			requested_same_addr = !0;
+			switch (cstep) {
+				case 2:
+					if (inst.op_mul)
+						inst.mul_a = MUX_REGB;
+					else
+						inst.add_a = MUX_REGB;
+					break;
+				case 3:
+					if (inst.op_mul)
+						inst.mul_b = MUX_REGA;
+					else
+						inst.add_b = MUX_REGA;
+					break;
+				default:
+					error_invalid_character(*yytext);
+			}
+			break;
+		default:
+			error_invalid_character(*yytext);
+	}
 }
 
 :.+$ {

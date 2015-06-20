@@ -72,5 +72,6 @@
 
 	void reset_inst(inst_t *p);
 	void output_inst(inst_t inst, FILE *fp);
+	void output_inst_all(FILE *fp);
 
 #endif /* _QTC_AUX_H_ */

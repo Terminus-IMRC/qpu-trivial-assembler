@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "qtc_aux.h"
+#include "qtc_mem.h"
 #include "print_bin.h"
+#include "label_addr.h"
 
 void reset_inst(inst_t *p)
 {
@@ -113,4 +116,20 @@ void output_inst(inst_t inst, FILE *fp)
 			break;
 	}
 	fputc('\n', fp);
+}
+
+void output_inst_all(FILE *fp)
+{
+	int i;
+	int n;
+
+	n = qtc_mem_n();
+	for (i = 0; i < n; i ++) {
+		struct qtc_mem qm = qtc_mem_dequeue();
+		if (qm.inst.sig == SIG_BRA) {
+			qm.inst.imm = (int32_t)(label_addr_str_to_linenum(qm.str) - 4 - i) * (64 / 8);
+			free(qm.str);
+		}
+		output_inst(qm.inst, fp);
+	}
 }

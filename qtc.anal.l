@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "qtc.h"
 #include "qtc_aux.h"
+#include "qtc_mem.h"
 #include "strtol_ex.h"
 #include "label_addr.h"
 
@@ -48,6 +49,7 @@ static _Bool is_touched = 0;
 static _Bool is_to_inc_p = 0;
 static _Bool is_cond_set = 0;
 static _Bool requested_same_addr = 0;
+static char *label = NULL;
 
 static void end_of_line()
 {
@@ -64,7 +66,7 @@ static void end_of_line()
 			}
 		}
 
-		output_inst(inst, stdout);
+		qtc_mem_inqueue(inst, label);
 
 		plinenum ++;
 		reset_inst(&inst);
@@ -72,6 +74,7 @@ static void end_of_line()
 		is_touched = 0;
 		is_cond_set = 0;
 		requested_same_addr = 0;
+		label = NULL;
 	} else if (is_to_inc_p)
 		plinenum ++;
 	is_to_inc_p = 0;
@@ -630,7 +633,7 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 		case 4:
 			if (inst.sig == SIG_BRA) {
 				inst.rel = 1; /* set automatically! */
-				inst.imm = (int32_t)(label_addr_str_to_linenum(yytext + 1) - 4 - plinenum) * (64 / 8);
+				label = strdup(yytext + 1);
 				break;
 			}
 		default:
@@ -651,6 +654,7 @@ void qtc_assemble_file(FILE *fp)
 {
 	YY_BUFFER_STATE state;
 
+	qtc_mem_init();
 	label_addr_init();
 	reset_inst(&inst);
 
@@ -664,13 +668,17 @@ void qtc_assemble_file(FILE *fp)
 	yylex();
 	yy_delete_buffer(state);
 
+	output_inst_all(stdout);
+
 	label_addr_finalize();
+	qtc_mem_finalize();
 }
 
 void qtc_assemble_string(const char *str)
 {
 	YY_BUFFER_STATE state;
 
+	qtc_mem_init();
 	label_addr_init();
 	reset_inst(&inst);
 
@@ -682,5 +690,8 @@ void qtc_assemble_string(const char *str)
 	yylex();
 	yy_delete_buffer(state);
 
+	output_inst_all(stdout);
+
 	label_addr_finalize();
+	qtc_mem_finalize();
 }

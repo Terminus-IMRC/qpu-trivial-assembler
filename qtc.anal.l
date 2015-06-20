@@ -214,10 +214,15 @@ static void addr_set_backend(int reg, regtype1_t type1, regtype2_t type2, regtyp
 				}
 				if (type3 == REGTYPE3_REG)
 					inst.raddr_b = reg;
-				if (inst.op_mul)
+				if (inst.op_mul) {
 					inst.mul_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
-				else
+					if (requested_same_addr)
+						inst.mul_a = inst.mul_b;
+				} else {
 					inst.add_b = (type3 == REGTYPE3_ACC ? mux : MUX_REGB);
+					if (requested_same_addr)
+						inst.add_a = inst.add_b;
+				}
 				break;
 		}
 	}
@@ -601,16 +606,12 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 			requested_same_addr = !0;
 			switch (cstep) {
 				case 2:
-					if (inst.op_mul)
-						inst.mul_a = MUX_REGB;
-					else
-						inst.add_a = MUX_REGB;
 					break;
 				case 3:
 					if (inst.op_mul)
-						inst.mul_b = MUX_REGA;
+						inst.mul_b = inst.mul_a;
 					else
-						inst.add_b = MUX_REGA;
+						inst.add_b = inst.add_a;
 					break;
 				default:
 					error_invalid_character(*yytext);

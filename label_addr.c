@@ -98,6 +98,7 @@ static struct node_t* alloc_node()
 
 static void free_node(struct node_t *p)
 {
+	free(p->str);
 	free(p);
 }
 

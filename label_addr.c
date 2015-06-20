@@ -3,49 +3,41 @@
 #include <errno.h>
 #include "error.h"
 
-#define HASH_MAX 255
-
 struct node_t {
 	char *str;
 	int linenum;
 	struct node_t *next;
-} *nodes[HASH_MAX];
+} *node_orig;
 
 static struct node_t* alloc_node();
 static void free_node(struct node_t *p);
 static void free_node_recursive(struct node_t *p);
-static unsigned int calculate_hash(const char *str);
 
 void label_addr_init()
 {
-	int i;
 	static _Bool is_called = 0;
 
 	if (is_called)
 		return;
 	is_called = !0;
 
-	for (i = 0; i < HASH_MAX; i ++)
-		nodes[i] = NULL;
+	node_orig = NULL;
 }
 
 void label_addr_finalize()
 {
-	int i;
 	static _Bool is_called = 0;
 
 	if (is_called)
 		return;
 	is_called = !0;
 
-	for (i = 0; i < HASH_MAX; i ++)
-		if (nodes[i] != NULL)
-			free_node_recursive(nodes[i]);
+	if (node_orig != NULL)
+		free_node_recursive(node_orig);
 }
 
 void label_addr_add_entry(const char *str, const int linenum)
 {
-	unsigned int hash;
 	struct node_t *p;
 
 	if (str == NULL) {
@@ -53,10 +45,10 @@ void label_addr_add_entry(const char *str, const int linenum)
 		exit(EXIT_FAILURE);
 	}
 
-	p = nodes[hash = calculate_hash(str)];
+	p = node_orig;
 
 	if (p == NULL) {
-		p = nodes[hash] = alloc_node();
+		p = node_orig = alloc_node();
 	} else {
 		struct node_t *p_prev;
 		do {
@@ -80,8 +72,7 @@ void label_addr_add_entry(const char *str, const int linenum)
 
 int label_addr_str_to_linenum(const char *str)
 {
-	unsigned int hash = calculate_hash(str);
-	struct node_t *p = nodes[hash];
+	struct node_t *p = node_orig;
 
 	while (p != NULL) {
 		if (!strcmp(str, p->str))
@@ -115,16 +106,4 @@ static void free_node_recursive(struct node_t *p)
 	if (p->next != NULL)
 		free_node_recursive(p->next);
 	free_node(p);
-}
-
-static unsigned int calculate_hash(const char *str)
-{
-	unsigned int hash = 0;
-
-	while (*str)
-		hash += *str++;
-
-	hash %= HASH_MAX;
-
-	return hash;
 }

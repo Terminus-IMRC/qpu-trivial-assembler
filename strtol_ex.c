@@ -11,7 +11,7 @@ long int strtol_ex(const char *nptr)
 	char *str;
 	long int num;
 
-	str = malloc(strlen(nptr) * sizeof(char));
+	str = malloc((strlen(nptr) + 1) * sizeof(char));
 	if (str == NULL) {
 		error("failed to malloc str\n");
 		exit(EXIT_FAILURE);
@@ -26,7 +26,7 @@ long int strtol_ex(const char *nptr)
 		}
 		if(!isspace(*nptr))
 			str[i ++] = *nptr;
-	} while (*nptr++);
+	} while (*++nptr);
 	str[i] = '\0';
 
 	if (!strncmp(str, "0b", 2)) {

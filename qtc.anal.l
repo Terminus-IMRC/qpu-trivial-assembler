@@ -286,7 +286,7 @@ void error_invalid_character(char c)
 
 \n|\r|\r\n end_of_line();
 
-^[ \t]*;.*$ puts(yytext);
+;.*$ puts(yytext);
 ^[ \t]*!.*$ {
 	is_to_inc_p = !0;
 	puts(yytext + 1);

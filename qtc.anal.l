@@ -42,6 +42,34 @@ typedef enum {
 	MUX_REGB = 7
 } mux_t;
 
+typedef enum {
+	UNPACK_16A32 = 1,
+	UNPACK_16B32 = 2,
+	UNPACK_8D8888 = 3,
+	UNPACK_8A32 = 4,
+	UNPACK_8B32 = 5,
+	UNPACK_8C32 = 6,
+	UNPACK_8D32 = 7
+} unpack_t;
+
+typedef enum {
+	PACK_3216A = 1,
+	PACK_3216B = 2,
+	PACK_328888 = 3,
+	PACK_328A = 4,
+	PACK_328B = 5,
+	PACK_328C = 6,
+	PACK_328D = 7,
+	PACK_3232S = 8,
+	PACK_3216AS = 9,
+	PACK_3216BS = 10,
+	PACK_328888S = 11,
+	PACK_328AS = 12,
+	PACK_328BS = 13,
+	PACK_328CS = 14,
+	PACK_328DS = 15
+} pack_t;
+
 static int linenum = 0, plinenum = 0;
 static inst_t inst;
 static int cstep = 0;
@@ -114,6 +142,24 @@ static void bra_cond_set(int cond)
 	}
 	is_cond_set = !0;
 	inst.cond_br = cond;
+}
+
+static void unpack_set(unpack_t p)
+{
+	if (inst.sig == SIG_BRA) {
+		error("unpack option is specified to bra\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.unpack = p;
+}
+
+static void pack_set(pack_t p)
+{
+	if (inst.sig == SIG_BRA) {
+		error("pack option is specified to bra\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.pack = p;
 }
 
 #define addr_set(reg, type1, type2, type3, mux) addr_set_backend(reg, REGTYPE1_##type1, REGTYPE2_##type2, REGTYPE3_##type3, mux)
@@ -403,6 +449,38 @@ lipeu {
 \.allcc bra_cond_set(9);
 \.anycs bra_cond_set(10);
 \.anycc bra_cond_set(11);
+
+\.pm {
+	if (inst.sig == SIG_BRA) {
+		error("pm option is specified to bra\n");
+		exit(EXIT_FAILURE);
+	}
+	inst.pm = 1;
+}
+
+\.16a32 unpack_set(UNPACK_16A32);
+\.16b32 unpack_set(UNPACK_16B32);
+\.8d8888 unpack_set(UNPACK_8D8888);
+\.8a32 unpack_set(UNPACK_8A32);
+\.8b32 unpack_set(UNPACK_8B32);
+\.8c32 unpack_set(UNPACK_8C32);
+\.8d32 unpack_set(UNPACK_8D32);
+
+\.3216a pack_set(PACK_3216A);
+\.3216b pack_set(PACK_3216B);
+\.328888 pack_set(PACK_328888);
+\.328a pack_set(PACK_328A);
+\.328b pack_set(PACK_328B);
+\.328c pack_set(PACK_328C);
+\.328d pack_set(PACK_328D);
+\.3232s pack_set(PACK_3232S);
+\.3216as pack_set(PACK_3216AS);
+\.3216bs pack_set(PACK_3216BS);
+\.328888s pack_set(PACK_328888S);
+\.328as pack_set(PACK_328AS);
+\.328bs pack_set(PACK_328BS);
+\.328cs pack_set(PACK_328CS);
+\.328ds pack_set(PACK_328DS);
 
 \.sf {
 	if (inst.sig == SIG_BRA) {

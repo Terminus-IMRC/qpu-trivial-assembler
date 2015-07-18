@@ -93,6 +93,10 @@ static void end_of_line()
 					inst.cond_add = 1;
 			}
 		}
+		if ((inst.pm == 1) && (inst.pack >= 8)) {
+			error("pack value %d must be less than 8 if pm is set\n", inst.pack);
+			exit(EXIT_FAILURE);
+		}
 
 		qtc_mem_inqueue(inst, label);
 

@@ -3,7 +3,7 @@
 void print_bin(unsigned int bin, int width, FILE *fp)
 {
 	unsigned int mask;
-	
+
 	if (width == 0)
 		return;
 

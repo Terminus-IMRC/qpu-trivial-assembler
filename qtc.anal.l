@@ -85,6 +85,28 @@ static void end_of_line()
 	linenum ++;
 }
 
+static void op_add_set(int op)
+{
+	switch (inst.sig) {
+		case SIG_LI:
+		case SIG_BRA:
+			error("add op is specified to non-alu instruction\n");
+			exit(EXIT_FAILURE);
+	}
+	inst.op_add = op;
+}
+
+static void op_mul_set(int op)
+{
+	switch (inst.sig) {
+		case SIG_LI:
+		case SIG_BRA:
+			error("mul op is specified to non-alu instruction\n");
+			exit(EXIT_FAILURE);
+	}
+	inst.op_mul = op;
+}
+
 static void cond_set(int cond)
 {
 	if (!is_touched) {
@@ -364,36 +386,36 @@ lipeu {
 	inst.esig = ESIG_LIPEU;
 }
 
-\.nop inst.op_add = 0;
-\.fadd inst.op_add = 1;
-\.fsub inst.op_add = 2;
-\.fmin inst.op_add = 3;
-\.fmax inst.op_add = 4;
-\.fminabs inst.op_add = 5;
-\.fmaxabs inst.op_add = 6;
-\.ftoi inst.op_add = 7;
-\.itof inst.op_add = 8;
-\.add inst.op_add = 12;
-\.sub inst.op_add = 13;
-\.shr inst.op_add = 14;
-\.asr inst.op_add = 15;
-\.ror inst.op_add = 16;
-\.shl inst.op_add = 17;
-\.min inst.op_add = 18;
-\.max inst.op_add = 19;
-\.and inst.op_add = 20;
-\.or inst.op_add = 21;
-\.xor inst.op_add = 22;
-\.not inst.op_add = 23;
-\.clz inst.op_add = 24;
-\.v8adds inst.op_add = 30;
-\.v8subs inst.op_add = 31;
+\.nop op_add_set(0);
+\.fadd op_add_set(1);
+\.fsub op_add_set(2);
+\.fmin op_add_set(3);
+\.fmax op_add_set(4);
+\.fminabs op_add_set(5);
+\.fmaxabs op_add_set(6);
+\.ftoi op_add_set(7);
+\.itof op_add_set(8);
+\.add op_add_set(12);
+\.sub op_add_set(13);
+\.shr op_add_set(14);
+\.asr op_add_set(15);
+\.ror op_add_set(16);
+\.shl op_add_set(17);
+\.min op_add_set(18);
+\.max op_add_set(19);
+\.and op_add_set(20);
+\.or op_add_set(21);
+\.xor op_add_set(22);
+\.not op_add_set(23);
+\.clz op_add_set(24);
+\.v8adds op_add_set(30);
+\.v8subs op_add_set(31);
 
-\.fmul inst.op_mul = 1;
-\.mul24 inst.op_mul = 2;
-\.v8muld inst.op_mul = 3;
-\.v8min inst.op_mul = 4;
-\.v8max inst.op_mul = 5;
+\.fmul op_mul_set(1);
+\.mul24 op_mul_set(2);
+\.v8muld op_mul_set(3);
+\.v8min op_mul_set(4);
+\.v8max op_mul_set(5);
 
 \.never cond_set(0);
 \.always {

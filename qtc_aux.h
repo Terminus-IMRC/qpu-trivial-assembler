@@ -33,41 +33,41 @@
 	typedef struct {
 		sig_t sig:4;
 
-		int unpack:4;
+		unsigned int unpack:4;
 		esig_t esig:4;
 
-		int pm:1;
+		unsigned int pm:1;
 
-		int pack:4;
-		int cond_br:4;
+		unsigned int pack:4;
+		unsigned int cond_br:4;
 
-		int cond_add:3;
-		int cond_mul:3;
-		int sf:1;
+		unsigned int cond_add:3;
+		unsigned int cond_mul:3;
+		unsigned int sf:1;
 
-		int rel:1;
-		int reg:1;
+		unsigned int rel:1;
+		unsigned int reg:1;
 
-		int ws:1;
-		int waddr_add:6;
-		int waddr_mul:6;
+		unsigned int ws:1;
+		unsigned int waddr_add:6;
+		unsigned int waddr_mul:6;
 
-		int op_mul:3;
-		int op_add:5;
-		int raddr_a:6;
-		int raddr_b:6;
-		int add_a:3;
-		int add_b:3;
-		int mul_a:3;
-		int mul_b:3;
+		unsigned int op_mul:3;
+		unsigned int op_add:5;
+		unsigned int raddr_a:6;
+		unsigned int raddr_b:6;
+		unsigned int add_a:3;
+		unsigned int add_b:3;
+		unsigned int mul_a:3;
+		unsigned int mul_b:3;
 
-		int imm:32;
+		unsigned int imm:32;
 
-		int pems:16;
-		int pels:16;
+		unsigned int pems:16;
+		unsigned int pels:16;
 
-		int sa:1;
-		int semaphore:4;
+		unsigned int sa:1;
+		unsigned int semaphore:4;
 	} inst_t;
 
 	void reset_inst(inst_t *p);

@@ -8,7 +8,7 @@
 long int strtol_ex(const char *nptr)
 {
 	int i, base = 0;
-	char *str;
+	char *str, *endptr;
 	long int num;
 
 	str = malloc((strlen(nptr) + 1) * sizeof(char));
@@ -36,11 +36,14 @@ long int strtol_ex(const char *nptr)
 		i= 0;
 
 	errno = 0;
-	num = strtoul(str + i, NULL, base);
+	num = strtoul(str + i, &endptr, base);
 
 	if ((errno == ERANGE && (num == LONG_MAX || num == LONG_MIN)) || (errno != 0 && num == 0)) {
 		error("strtoul: %s\n", strerror(errno));
 		free(str);
+		exit(EXIT_FAILURE);
+	} else if (*endptr != '\0') {
+		error("extra characters are found after number: %s\n", endptr);
 		exit(EXIT_FAILURE);
 	}
 

@@ -756,7 +756,7 @@ void qtc_assemble_file(FILE *fp)
 	qtc_mem_finalize();
 }
 
-void qtc_assemble_string(const char *str)
+void qtc_assemble_string(const char *str, FILE *outfp)
 {
 	YY_BUFFER_STATE state;
 
@@ -772,7 +772,7 @@ void qtc_assemble_string(const char *str)
 	yylex();
 	yy_delete_buffer(state);
 
-	output_inst_all(stdout);
+	output_inst_all(outfp);
 
 	label_addr_finalize();
 	qtc_mem_finalize();

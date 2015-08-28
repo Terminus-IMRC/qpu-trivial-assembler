@@ -5,11 +5,11 @@
 #include <errno.h>
 #include "error.h"
 
-long int strtol_ex(const char *nptr)
+unsigned long int strtol_ex(const char *nptr)
 {
 	int i, base = 0;
 	char *str, *endptr;
-	long int num;
+	unsigned long int num;
 
 	str = malloc((strlen(nptr) + 1) * sizeof(char));
 	if (str == NULL) {
@@ -38,7 +38,7 @@ long int strtol_ex(const char *nptr)
 	errno = 0;
 	num = strtoul(str + i, &endptr, base);
 
-	if ((errno == ERANGE && (num == LONG_MAX || num == LONG_MIN)) || (errno != 0 && num == 0)) {
+	if ((errno == ERANGE && num == ULONG_MAX) || (errno != 0 && num == 0)) {
 		error("strtoul: %s\n", strerror(errno));
 		free(str);
 		exit(EXIT_FAILURE);

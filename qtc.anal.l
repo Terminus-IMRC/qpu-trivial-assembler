@@ -71,6 +71,7 @@ static void end_of_line()
 		}
 
 		qtc_mem_inqueue(inst, label);
+		free(label);
 
 		plinenum ++;
 		reset_inst(&inst);

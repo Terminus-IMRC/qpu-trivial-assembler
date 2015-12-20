@@ -1,125 +1,172 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include "qtc_aux.h"
 #include "qtc_mem.h"
 #include "error.h"
 
-static struct qtc_mem **mems;
-static const int mem_membs = 1024;
-static int mem_len = 0;
-static int minor_count = 0, major_count = 0;
+#define QTC_MEM_TMPDIR "."
 
-static struct qtc_mem** qtc_mems_alloc(const int membs);
-static struct qtc_mem* qtc_mem_alloc();
-static void qtc_mem_update_mems(const int membs);
-
-static struct qtc_mem** qtc_mems_alloc(const int membs)
-{
-	struct qtc_mem **p;
-
-	p = malloc(membs * sizeof(struct qtc_mem*));
-	if (p == NULL) {
-		error("failed to allocate mems\n");
-		exit(EXIT_FAILURE);
-	}
-
-	return p;
-}
-
-static struct qtc_mem* qtc_mem_alloc()
-{
-	struct qtc_mem *p;
-
-	p = malloc(mem_membs * sizeof(struct qtc_mem));
-	if (p == NULL) {
-		error("failed to allocate mem\n");
-		exit(EXIT_FAILURE);
-	}
-
-	return p;
-}
-
-static void qtc_mem_update_mems(const int membs)
-{
-	int i;
-	struct qtc_mem **new_mems;
-
-	for (i = membs; i < mem_len; i ++)
-		free(mems[i]);
-	new_mems = qtc_mems_alloc(membs);
-	for (i = 0; i < ((membs < mem_len) ? membs : mem_len); i ++) {
-		new_mems[i] = qtc_mem_alloc();
-		memcpy(new_mems[i], mems[i], mem_membs * sizeof(struct qtc_mem));
-		free(mems[i]);
-	}
-	free(mems);
-	for (i = mem_len; i < membs; i ++)
-		new_mems[i] = qtc_mem_alloc();
-
-	mem_len = membs;
-	mems = new_mems;
-}
+static int fd = -1;
+static char fd_filename[] = QTC_MEM_TMPDIR "/" "XXXXXX";
+static int max_str_len = 0;
+static char *mstr = NULL;
+static int len = 0;
 
 void qtc_mem_init()
 {
 	static _Bool is_called = 0;
+	mode_t umask_tmp, umask_set;
+	int ret;
 
 	if (is_called)
 		return;
 	is_called = !0;
 
-	mem_len = 1;
-	mems = qtc_mems_alloc(mem_len);
-	mems[0] = qtc_mem_alloc();
+	umask_set = S_IXUSR | S_IRWXG | S_IRWXO;
+	umask_tmp = umask(umask_set);
+	fd = mkstemp(fd_filename);
+	umask_tmp = umask(umask_tmp);
+	if (fd == -1) {
+		error("mkstemp: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+	if(umask_set != umask_tmp) {
+		error("set %04o umask but %04o is returned\n", umask_set, umask_tmp);
+		exit(EXIT_FAILURE);
+	}
+
+	ret = unlink(fd_filename);
+	if (ret == -1) {
+		error("close: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	ret = ftruncate(fd, 0);
+	if (ret == -1) {
+		error("ftruncate: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	max_str_len = 0;
+	len = 0;
 }
 
 void qtc_mem_finalize()
 {
-	int i;
 	static _Bool is_called = 0;
+	int ret;
 
 	if (is_called)
 		return;
 	is_called = !0;
 
-	for (i = 0; i < mem_len; i ++)
-		free(mems[i]);
-	free(mems);
+	ret = close(fd);
+	if (ret == -1) {
+		error("close: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
 }
 
-void qtc_mem_inqueue(const inst_t inst, char *str)
+void qtc_mem_inqueue(const inst_t inst, const char *str)
 {
-	if (minor_count == mem_membs) {
-		qtc_mem_update_mems(mem_len + 1);
-		major_count ++;
-		minor_count = 0;
+	int str_len;
+	ssize_t rets;
+
+	if (str == NULL)
+		str_len = 0;
+	else
+		str_len = strlen(str);
+
+	rets = write(fd, &inst, sizeof(inst));
+	if (rets == -1) {
+		error("write: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
 	}
-	mems[major_count][minor_count].inst = inst;
-	mems[major_count][minor_count].str = str;
-	minor_count ++;
+
+	rets = write(fd, &str_len, sizeof(str_len));
+	if (rets == -1) {
+		error("write: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	if (str_len != 0) {
+		/* i.e. sans '\0' */
+		rets = write(fd, str, str_len);
+		if (rets == -1) {
+			error("write: %s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if (str_len > max_str_len)
+		max_str_len = str_len;
+
+	len ++;
+}
+
+void qtc_mem_dequeue_init()
+{
+	off_t reto;
+
+	reto = lseek(fd, 0, SEEK_SET);
+	if (reto == -1) {
+		error("lseek: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	mstr = malloc((max_str_len + 1) * sizeof(mstr[0]));
+	if (mstr == NULL) {
+		error("failed to allocate mstr\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* Alea iacta est. */
+}
+
+void qtc_mem_dequeue_finalize()
+{
+	free(mstr);
 }
 
 struct qtc_mem qtc_mem_dequeue()
 {
-	static int dmajor_count = 0, dminor_count = 0;
+	inst_t inst;
+	int str_len;
+	ssize_t rets;
+	struct qtc_mem qm;
 
-	if (dminor_count == mem_membs) {
-		dmajor_count ++;
-		if (dmajor_count > major_count) {
-			error("too may dequeues\n");
-			exit(EXIT_FAILURE);
-		}
-		dminor_count = 0;
-	}
-	if ((dmajor_count == major_count) && (dminor_count >= minor_count)) {
-		error("too may dequeues\n");
+	rets = read(fd, &inst, sizeof(inst));
+	if (rets == -1) {
+		error("read: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
-	return mems[dmajor_count][dminor_count ++];
+
+	rets = read(fd, &str_len, sizeof(str_len));
+	if (rets == -1) {
+		error("read: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
+	if (str_len == 0) {
+		rets = read(fd, mstr, str_len);
+		if (rets == -1) {
+			error("read: %s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+		}
+	}
+	mstr[str_len] = '\0';
+
+	qm.inst = inst;
+	qm.str = mstr;
+
+	return qm;
 }
 
 int qtc_mem_n()
 {
-	return major_count * mem_membs + minor_count;
+	return len;
 }

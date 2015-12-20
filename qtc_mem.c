@@ -152,15 +152,13 @@ struct qtc_mem qtc_mem_dequeue()
 	}
 
 	if (str_len == 0) {
-		mstr[0] = '\0';
-	} else {
 		rets = read(fd, mstr, str_len);
 		if (rets == -1) {
 			error("read: %s\n", strerror(errno));
 			exit(EXIT_FAILURE);
 		}
-		mstr[str_len] = '\0';
 	}
+	mstr[str_len] = '\0';
 
 	qm.inst = inst;
 	qm.str = mstr;

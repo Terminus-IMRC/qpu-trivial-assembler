@@ -123,14 +123,15 @@ void output_inst_all(FILE *fp)
 	int i;
 	int n;
 
+	qtc_mem_dequeue_init();
 	n = qtc_mem_n();
 	for (i = 0; i < n; i ++) {
 		struct qtc_mem qm = qtc_mem_dequeue();
 		if (qm.inst.sig == SIG_BRA) {
 			qm.inst.imm = (int32_t)(label_addr_str_to_linenum(qm.str) - 4 - i) * (64 / 8);
 			fprintf(fp, ";:%s\n", qm.str);
-			free(qm.str);
 		}
 		output_inst(qm.inst, fp);
 	}
+	qtc_mem_dequeue_finalize();
 }

@@ -6,9 +6,8 @@
 #include <stdint.h>
 #include "qtc.h"
 #include "qtc_aux.h"
-#include "qtc_mem.h"
 #include "strtol_ex.h"
-#include "label_addr.h"
+#include "diskstorage.h"
 
 #define error(str, ...) fprintf(stderr, "%s:%d: %d: error: " str, __FILE__, __LINE__, linenum + 1, ## __VA_ARGS__)
 #define error_sane(str, ...) fprintf(stderr, "%s:%d: error: " str, __FILE__, __LINE__, ## __VA_ARGS__)
@@ -70,8 +69,11 @@ static void end_of_line()
 			exit(EXIT_FAILURE);
 		}
 
-		qtc_mem_inqueue(inst, label);
-		free(label);
+		diskstorage_append(&inst, sizeof(inst), &dst_inst);
+		if (label != NULL) {
+			diskstorage_append(label, strlen(label), &dst_inst_label);
+			free(label);
+		}
 
 		plinenum ++;
 		reset_inst(&inst);
@@ -705,7 +707,8 @@ tmu1_b addr_set(63, AB, WO, REG, MUX_);
 :.+$ {
 	switch (cstep) {
 		case 0:
-			label_addr_add_entry(yytext + 1, plinenum);
+			diskstorage_append(yytext + 1, strlen(yytext + 1), &dst_label);
+			diskstorage_append(&plinenum, sizeof(plinenum), &dst_addr);
 			break;
 		case 4:
 			if (inst.sig == SIG_BRA) {
@@ -731,8 +734,10 @@ void qtc_assemble_file(FILE *fp)
 {
 	YY_BUFFER_STATE state;
 
-	qtc_mem_init();
-	label_addr_init();
+	diskstorage_init(&dst_inst);
+	diskstorage_init(&dst_inst_label);
+	diskstorage_init(&dst_label);
+	diskstorage_init(&dst_addr);
 	reset_inst(&inst);
 
 	yyin = fp;
@@ -747,16 +752,20 @@ void qtc_assemble_file(FILE *fp)
 
 	output_inst_all(stdout);
 
-	label_addr_finalize();
-	qtc_mem_finalize();
+	diskstorage_finalize(&dst_addr);
+	diskstorage_finalize(&dst_label);
+	diskstorage_finalize(&dst_inst_label);
+	diskstorage_finalize(&dst_inst);
 }
 
 void qtc_assemble_string(const char *str, FILE *outfp)
 {
 	YY_BUFFER_STATE state;
 
-	qtc_mem_init();
-	label_addr_init();
+	diskstorage_init(&dst_inst);
+	diskstorage_init(&dst_inst_label);
+	diskstorage_init(&dst_label);
+	diskstorage_init(&dst_addr);
 	reset_inst(&inst);
 
 	state = yy_scan_string(str);
@@ -769,6 +778,8 @@ void qtc_assemble_string(const char *str, FILE *outfp)
 
 	output_inst_all(outfp);
 
-	label_addr_finalize();
-	qtc_mem_finalize();
+	diskstorage_finalize(&dst_addr);
+	diskstorage_finalize(&dst_label);
+	diskstorage_finalize(&dst_inst_label);
+	diskstorage_finalize(&dst_inst);
 }

@@ -1,5 +1,5 @@
 TARGETS := qtc libqtca.a libqtca.so
-SRCS_C := qtc_aux.c qtc_mem.c print_bin.c strtol_ex.c label_addr.c
+SRCS_C := qtc_aux.c print_bin.c strtol_ex.c diskstorage.c
 SRCS_MAIN_C := main.c
 SRCS_L := qtc.anal.l
 CFLAGS := -Wall -Wextra -O2 -g -pipe
